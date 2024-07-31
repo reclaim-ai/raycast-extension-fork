@@ -86,11 +86,10 @@ export default function Command() {
       return eventData.find((e) => e.eventId === originalEventID) ?? event;
     };
 
-    const { event, nextEvent } = eventMomentData;
+    const { event } = eventMomentData;
 
     return {
       event: findEvent(event),
-      nextEvent: findEvent(nextEvent),
     };
   }, [eventMomentData, eventData]);
 
