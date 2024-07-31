@@ -124,9 +124,9 @@ const ListSection = ({ events, sectionTitle }: { sectionTitle: string; events: E
 
   return (
     <List.Section title={sectionTitle}>
-      {events.map((item) => (
+      {events.map((item, i) => (
         <List.Item
-          key={item.eventId}
+          key={`${i}- ${item.eventId}`}
           title={showFormattedEventTitle(item)}
           icon={{
             tintColor: eventColors[item.color],
