@@ -64,50 +64,50 @@ export default function Command() {
 
   const { useFetchEvents } = useEvent();
 
-  const { data: eventData, isLoading: isLoadingEvents } = useFetchEvents({
+  const { data: events, isLoading: isLoadingEvents } = useFetchEvents({
     start: startOfDay(now),
     end: addDays(now, 2),
   });
 
   const { useFetchNext } = useMoment();
 
-  const { data: eventMomentData, isLoading: isLoadingMoment } = useFetchNext();
+  const { data: momentNextData, isLoading: isLoadingMoment } = useFetchNext();
 
   // if the events returned my moment/next are synced events then return the original event from the events call if it exists
   const eventMoment = useMemo(() => {
-    if (!eventMomentData) return eventMomentData;
+    if (!momentNextData) return momentNextData;
 
     const findEvent = (event: Event | undefined | null) => {
-      if (!event || !eventData || eventData.length === 0) return event;
+      if (!event || !events || events.length === 0) return event;
 
       const originalEventID = getOriginalEventIDFromSyncEvent(event);
       if (!originalEventID) return event;
 
-      return eventData.find((e) => e.eventId === originalEventID) ?? event;
+      return events.find((e) => e.eventId === originalEventID) ?? event;
     };
 
-    const { event } = eventMomentData;
+    const { event } = momentNextData;
 
     return {
       event: findEvent(event),
     };
-  }, [eventMomentData, eventData]);
+  }, [momentNextData, events]);
 
   const showDeclinedEvents = useMemo(() => {
     return !!currentUser?.settings.showDeclinedEvents;
   }, [currentUser]);
 
-  const events = useMemo<EventSection[]>(() => {
-    if (!eventData) return [];
+  const eventSections = useMemo<EventSection[]>(() => {
+    if (!events) return [];
 
     const now = new Date();
     const today = startOfDay(now);
 
-    const events: EventSection[] = [
+    const eventSectionsUnfiltered: EventSection[] = [
       {
         section: "NOW",
         sectionTitle: "Now",
-        events: eventData
+        events: events
           .filter((event) => {
             return showDeclinedEvents ? true : event.rsvpStatus !== "Declined" && event.rsvpStatus !== "NotResponded";
           })
@@ -126,7 +126,7 @@ export default function Command() {
       {
         section: "TODAY",
         sectionTitle: "Upcoming events",
-        events: eventData
+        events: events
           .filter((event) => {
             return showDeclinedEvents ? true : event.rsvpStatus !== "Declined" && event.rsvpStatus !== "NotResponded";
           })
@@ -144,8 +144,8 @@ export default function Command() {
       },
     ];
 
-    return events.filter((event) => event.events.length > 0);
-  }, [eventData, showDeclinedEvents]);
+    return eventSectionsUnfiltered.filter((event) => event.events.length > 0);
+  }, [events, showDeclinedEvents]);
 
   const handleOpenReclaim = () => {
     open("https://app.reclaim.ai");
@@ -205,7 +205,7 @@ export default function Command() {
       title={titleInfo.minTitle}
       tooltip={titleInfo.fullTitle}
     >
-      {events.map((eventSection) => (
+      {eventSections.map((eventSection) => (
         <EventsSection
           key={eventSection.section}
           events={eventSection.events}
