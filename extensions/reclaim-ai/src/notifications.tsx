@@ -69,7 +69,7 @@ export default function Command() {
 
   const { momentData, isLoading: isLoadingMoment } = useMoment();
 
-  // if the events returned my moment/next are synced events then return the original event from the events call if it exists
+  // if the events returned by moment/next are synced events then return the original event from the events call if it exists
   const eventMoment = useMemo(() => {
     if (!momentData) return momentData;
 
