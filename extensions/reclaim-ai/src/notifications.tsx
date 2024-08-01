@@ -1,7 +1,7 @@
 import { Icon, LaunchType, MenuBarExtra, getPreferenceValues, launchCommand, open } from "@raycast/api";
 import { addDays, differenceInHours, endOfDay, formatDistance, isWithinInterval, startOfDay } from "date-fns";
 import { useMemo } from "react";
-import { useEvent } from "./hooks/useEvent";
+import { useEventActions, useEvents } from "./hooks/useEvent";
 import { useMoment } from "./hooks/useMoment";
 import { useUser } from "./hooks/useUser";
 import { Event } from "./types/event";
@@ -20,7 +20,7 @@ type TitleInfo = {
 };
 
 const ActionOptionsWithContext = ({ event }: { event: Event }) => {
-  const { getEventActions } = useEvent();
+  const { getEventActions } = useEventActions();
 
   return (
     <>
@@ -32,7 +32,7 @@ const ActionOptionsWithContext = ({ event }: { event: Event }) => {
 };
 
 const EventsSection = ({ events, sectionTitle }: { events: Event[]; sectionTitle: string }) => {
-  const { showFormattedEventTitle } = useEvent();
+  const { showFormattedEventTitle } = useEventActions();
 
   return (
     <>
@@ -62,9 +62,7 @@ export default function Command() {
 
   const now = new Date();
 
-  const { useFetchEvents } = useEvent();
-
-  const { data: events, isLoading: isLoadingEvents } = useFetchEvents({
+  const { events, isLoading: isLoadingEvents } = useEvents({
     start: startOfDay(now),
     end: addDays(now, 2),
   });

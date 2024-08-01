@@ -13,10 +13,7 @@ import { ApiResponseEvents, EventActions } from "./useEvent.types";
 import { useTask } from "./useTask";
 import { useUser } from "./useUser";
 
-const useEvent = () => {
-  const { fetcher } = reclaimApi();
-  const { currentUser } = useUser();
-  const { handleStartTask, handleRestartTask, handleStopTask } = useTask();
+export const useEvents = ({ start, end }: { start: Date; end: Date }) => {
   const { apiUrl, apiToken } = getPreferenceValues<NativePreferences>();
 
   const headers = useMemo(
@@ -28,29 +25,37 @@ const useEvent = () => {
     [apiToken]
   );
 
-  const useFetchEvents = ({ start, end }: { start: Date; end: Date }) => {
-    const { data, ...rest } = useFetch<ApiResponseEvents>(
-      `${apiUrl}/events?${new URLSearchParams({
-        sourceDetails: "true",
-        start: format(start, "yyyy-MM-dd"),
-        end: format(end, "yyyy-MM-dd"),
-        allConnected: "true",
-      }).toString()}`,
-      {
-        headers,
-        keepPreviousData: true,
-      }
-    );
+  const {
+    data: events,
+    error,
+    isLoading,
+  } = useFetch<ApiResponseEvents>(
+    `${apiUrl}/events?${new URLSearchParams({
+      sourceDetails: "true",
+      start: format(start, "yyyy-MM-dd"),
+      end: format(end, "yyyy-MM-dd"),
+      allConnected: "true",
+    }).toString()}`,
+    {
+      headers,
+      keepPreviousData: true,
+    }
+  );
 
-    // is this a bad line?
-    // if (!data || rest.error) throw rest.error;
+  if (error) throw error;
 
-    return {
-      // Filter out events that are synced, managed by Reclaim and part of multiple calendars
-      data: useMemo(() => filterMultipleOutDuplicateEvents(data), [data]),
-      ...rest,
-    };
+  return {
+    events: filterMultipleOutDuplicateEvents(events),
+    isLoading,
+    error,
   };
+};
+
+export const useEventActions = () => {
+  const { fetcher } = reclaimApi();
+  const { currentUser } = useUser();
+  const { handleStartTask, handleRestartTask, handleStopTask } = useTask();
+  const { apiUrl } = getPreferenceValues<NativePreferences>();
 
   const showFormattedEventTitle = useCallback(
     (event: Event, mini = false) => {
@@ -315,10 +320,7 @@ const useEvent = () => {
   }, []);
 
   return {
-    useFetchEvents,
     getEventActions,
     showFormattedEventTitle,
   };
 };
-
-export { useEvent };

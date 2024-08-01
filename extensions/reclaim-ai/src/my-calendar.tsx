@@ -10,7 +10,7 @@ import {
   startOfDay,
 } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
-import { useEvent } from "./hooks/useEvent";
+import { useEventActions, useEvents } from "./hooks/useEvent";
 import { EventActions } from "./hooks/useEvent.types";
 import { Event } from "./types/event";
 import { eventColors } from "./utils/events";
@@ -22,11 +22,11 @@ type EventSection = { section: string; sectionTitle: string; events: Event[] };
 const EventActionsList = ({ event }: { event: Event }) => {
   const [eventActions, setEventActions] = useState<EventActions>([]);
 
-  const { getEventActions } = useEvent();
+  const { getEventActions } = useEventActions();
   const { rescheduleTask } = useTask();
 
-  const loadEventActions = async () => {
-    const actions = await getEventActions(event);
+  const loadEventActions = () => {
+    const actions = getEventActions(event);
     setEventActions(actions);
   };
 
@@ -65,7 +65,7 @@ const EventActionsList = ({ event }: { event: Event }) => {
           }}
         />
       ))}
-            {event.reclaimManaged === true && event.assist?.eventType === "TASK_ASSIGNMENT" && (
+      {event.reclaimManaged === true && event.assist?.eventType === "TASK_ASSIGNMENT" && (
         <ActionPanel.Submenu title="Snooze Task" icon={Icon.ArrowClockwise}>
           {SNOOZE_OPTIONS.map((option) => (
             <Action
@@ -85,7 +85,7 @@ const EventActionsList = ({ event }: { event: Event }) => {
 const now = new Date();
 
 const ListSection = ({ events, sectionTitle }: { sectionTitle: string; events: Event[] }) => {
-  const { showFormattedEventTitle } = useEvent();
+  const { showFormattedEventTitle } = useEventActions();
 
   return (
     <List.Section title={sectionTitle}>
@@ -116,9 +116,7 @@ export default function Command() {
   const [searchText, setSearchText] = useState("");
   const now = new Date();
 
-  const { useFetchEvents } = useEvent();
-
-  const { data: events, isLoading } = useFetchEvents({
+  const { events, isLoading } = useEvents({
     start: startOfDay(now),
     end: addDays(now, 7),
   });
