@@ -67,13 +67,11 @@ export default function Command() {
     end: addDays(now, 2),
   });
 
-  const { useFetchNext } = useMoment();
-
-  const { data: momentNextData, isLoading: isLoadingMoment } = useFetchNext();
+  const { momentData, isLoading: isLoadingMoment } = useMoment();
 
   // if the events returned my moment/next are synced events then return the original event from the events call if it exists
   const eventMoment = useMemo(() => {
-    if (!momentNextData) return momentNextData;
+    if (!momentData) return momentData;
 
     const findEvent = (event: Event | undefined | null) => {
       if (!event || !events || events.length === 0) return event;
@@ -84,12 +82,12 @@ export default function Command() {
       return events.find((e) => e.eventId === originalEventID) ?? event;
     };
 
-    const { event } = momentNextData;
+    const { event } = momentData;
 
     return {
       event: findEvent(event),
     };
-  }, [momentNextData, events]);
+  }, [momentData, events]);
 
   const showDeclinedEvents = useMemo(() => {
     return !!currentUser?.settings.showDeclinedEvents;
