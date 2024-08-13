@@ -30,6 +30,10 @@ const useUser = () => {
 
       const [user, error] = await axiosPromiseData<ApiResponseUser>(fetcher("/users/current"));
 
+      // console.log('=> user', user)
+      // console.log('=> error', error)
+      // ENOTFOUND
+
       if (!user || error) throw error;
 
       setCurrentUser(user);
