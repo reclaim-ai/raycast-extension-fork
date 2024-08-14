@@ -25,7 +25,7 @@ const useSmartHabits = () => {
     keepPreviousData: true,
   });
 
-  if (error) throw error;
+  if (error) console.error("Error while fetching Smart Habits", error);
 
   return {
     smartHabits,

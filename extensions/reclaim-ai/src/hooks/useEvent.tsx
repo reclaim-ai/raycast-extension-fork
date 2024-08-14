@@ -43,7 +43,7 @@ export const useEvents = ({ start, end }: { start: Date; end: Date }) => {
     }
   );
 
-  if (error) throw error;
+  if (error) console.error("Error while fetching Events", error);
 
   return {
     events: filterMultipleOutDuplicateEvents(events),
