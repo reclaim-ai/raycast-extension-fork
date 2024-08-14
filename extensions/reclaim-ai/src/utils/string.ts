@@ -1,8 +1,6 @@
 import { emojiFindingRegex } from "./emoji-helper";
 
-export function testTextForEmoji(
-  text: string,
-) {
+export function testTextForEmoji(text: string) {
   let emoji;
   // try the simpler parser that will fail on Safari 14 lol
   // then complex emoji regex grabs flags but can fail some emojis

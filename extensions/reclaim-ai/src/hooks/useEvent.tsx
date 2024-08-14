@@ -12,6 +12,7 @@ import reclaimApi from "./useApi";
 import { ApiResponseEvents, EventActions } from "./useEvent.types";
 import { useTask } from "./useTask";
 import { useUser } from "./useUser";
+import { useSmartHabits } from "./useSmartHabits";
 
 export const useEvents = ({ start, end }: { start: Date; end: Date }) => {
   const { apiUrl, apiToken } = getPreferenceValues<NativePreferences>();
@@ -42,7 +43,7 @@ export const useEvents = ({ start, end }: { start: Date; end: Date }) => {
     }
   );
 
-  // if (error) throw error;
+  if (error) throw error;
 
   return {
     events: filterMultipleOutDuplicateEvents(events),
@@ -57,6 +58,8 @@ export const useEventActions = () => {
   const { handleStartTask, handleRestartTask, handleStopTask } = useTask();
   const { apiUrl } = getPreferenceValues<NativePreferences>();
 
+  const { smartHabits } = useSmartHabits();
+
   const showFormattedEventTitle = useCallback(
     (event: Event, mini = false) => {
       const meridianFormat = currentUser?.settings.format24HourTime ? "24h" : "12h";
@@ -68,9 +71,6 @@ export const useEventActions = () => {
             end: new Date(event.eventEnd),
             hoursFormat: meridianFormat,
           });
-
-          // console.log('=> event.sourceDetails?.title', event.sourceDetails?.title)
-          // console.log('=> event.title', event.title)
 
       const realEventTitle = event.sourceDetails?.title || event.title;
       return `${hours}  ${stripPlannerEmojis(realEventTitle).textWithoutEmoji}`;
@@ -151,13 +151,24 @@ export const useEventActions = () => {
       start: new Date(event.eventStart),
     });
 
+    const smartHabit = smartHabits?.find((smartHabit) => smartHabit.lineageId === event.assist?.seriesLineageId);
+
     const hasRescheduleUnstarted = currentUser?.features.assistSettings.rescheduleUnstarted;
+
     const isEventManuallyStarted = event.assist?.manuallyStarted;
 
-    const showStart = !isActive || (!!isActive && !!hasRescheduleUnstarted && !isEventManuallyStarted);
+    const showStart =
+      !isActive ||
+      (!!isActive &&
+        !!hasRescheduleUnstarted &&
+        !isEventManuallyStarted &&
+        smartHabit?.activeSeries?.rescheduleUnstartedOverride !== false);
 
     const showRestartStop =
-      !!isActive && (!hasRescheduleUnstarted || (!!hasRescheduleUnstarted && !!isEventManuallyStarted));
+      !!isActive &&
+      (!hasRescheduleUnstarted ||
+        (!!hasRescheduleUnstarted && !!isEventManuallyStarted) ||
+        (!!hasRescheduleUnstarted && smartHabit?.activeSeries?.rescheduleUnstartedOverride === false));
 
     const eventActions: EventActions = [];
 
