@@ -69,7 +69,7 @@ export interface SmartSeriesView {
 }
 
 export type SmartSeriesLineageView<T extends SmartSeriesType> = {
-  lineageId?: number;
+  lineageId: number;
   calendarId?: number;
   type?: T;
   status?: SmartSeriesStatus;

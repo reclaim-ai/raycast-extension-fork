@@ -3,6 +3,7 @@ import { useFetch } from "@raycast/utils";
 import { useMemo } from "react";
 import { NativePreferences } from "../types/preferences";
 import { SmartHabit } from "../types/smart-series";
+import { normalize } from "../utils/objects";
 
 const useSmartHabits = () => {
   const { apiUrl, apiToken } = getPreferenceValues<NativePreferences>();
@@ -20,15 +21,18 @@ const useSmartHabits = () => {
     data: smartHabits,
     error,
     isLoading,
-  } = useFetch<[SmartHabit]>(`${apiUrl}/smart-habits`, {
+  } = useFetch<SmartHabit[]>(`${apiUrl}/smart-habits`, {
     headers,
     keepPreviousData: true,
   });
 
   if (error) console.error("Error while fetching Smart Habits", error);
 
+  const smartHabitsByLineageIdsMap = useMemo(() => (smartHabits ? normalize(smartHabits, "lineageId") : undefined), []);
+
   return {
     smartHabits,
+    smartHabitsByLineageIdsMap,
     error,
     isLoading,
   };

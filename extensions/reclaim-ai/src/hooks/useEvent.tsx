@@ -13,6 +13,7 @@ import { ApiResponseEvents, EventActions } from "./useEvent.types";
 import { useTask } from "./useTask";
 import { useUser } from "./useUser";
 import { useSmartHabits } from "./useSmartHabits";
+import { SmartHabit } from "../types/smart-series";
 
 export const useEvents = ({ start, end }: { start: Date; end: Date }) => {
   const { apiUrl, apiToken } = getPreferenceValues<NativePreferences>();
@@ -58,7 +59,7 @@ export const useEventActions = () => {
   const { handleStartTask, handleRestartTask, handleStopTask } = useTask();
   const { apiUrl } = getPreferenceValues<NativePreferences>();
 
-  const { smartHabits } = useSmartHabits();
+  const { smartHabitsByLineageIdsMap } = useSmartHabits();
 
   const showFormattedEventTitle = useCallback(
     (event: Event, mini = false) => {
@@ -73,14 +74,14 @@ export const useEventActions = () => {
           });
 
       const realEventTitle = event.sourceDetails?.title || event.title;
-      return `${hours}  ${stripPlannerEmojis(realEventTitle).textWithoutEmoji}`;
+      return `${hours}  ${stripPlannerEmojis(realEventTitle)}`;
     },
     [currentUser]
   );
 
   const handleStartHabit = async (id: string, title: string) => {
     try {
-      await showHUD("Started Habit: " + stripPlannerEmojis(title).textWithoutEmoji);
+      await showHUD("Started Habit: " + stripPlannerEmojis(title));
       const [habit, error] = await axiosPromiseData(fetcher(`/planner/start/habit/${id}`, { method: "POST" }));
       if (!habit || error) throw error;
       return habit;
@@ -92,7 +93,7 @@ export const useEventActions = () => {
 
   const handleRestartHabit = async (id: string, title: string) => {
     try {
-      await showHUD("Restarted Habit: " + stripPlannerEmojis(title).textWithoutEmoji);
+      await showHUD("Restarted Habit: " + stripPlannerEmojis(title));
       const [habit, error] = await axiosPromiseData(fetcher(`/planner/restart/habit/${id}`, { method: "POST" }));
       if (!habit || error) throw error;
       return habit;
@@ -104,7 +105,7 @@ export const useEventActions = () => {
 
   const handleStopHabit = async (id: string, title: string) => {
     try {
-      await showHUD("Stopped Habit: " + stripPlannerEmojis(title).textWithoutEmoji);
+      await showHUD("Stopped Habit: " + stripPlannerEmojis(title));
       const [habit, error] = await axiosPromiseData(fetcher(`/planner/stop/habit/${id}`, { method: "POST" }));
       if (!habit || error) throw error;
 
@@ -117,7 +118,7 @@ export const useEventActions = () => {
 
   const handleStartOrRestartSmartHabit = async (lineageId: string, title: string) => {
     try {
-      await showHUD("Started Habit: " + stripPlannerEmojis(title).textWithoutEmoji);
+      await showHUD("Started Habit: " + stripPlannerEmojis(title));
       const [habit, error] = await axiosPromiseData(
         fetcher(`/smart-habits/planner/${lineageId}/start`, { method: "POST" })
       );
@@ -132,7 +133,7 @@ export const useEventActions = () => {
 
   const handleStopSmartHabit = async (lineageId: string, title: string) => {
     try {
-      await showHUD("Stopped Habit: " + stripPlannerEmojis(title).textWithoutEmoji);
+      await showHUD("Stopped Habit: " + stripPlannerEmojis(title));
       const [habit, error] = await axiosPromiseData(
         fetcher(`/smart-habits/planner/${lineageId}/stop`, { method: "POST" })
       );
@@ -151,7 +152,9 @@ export const useEventActions = () => {
       start: new Date(event.eventStart),
     });
 
-    const smartHabit = smartHabits?.find((smartHabit) => smartHabit.lineageId === event.assist?.seriesLineageId);
+    const smartHabit: SmartHabit | undefined = event.assist?.seriesLineageId
+      ? smartHabitsByLineageIdsMap[event.assist.seriesLineageId]
+      : undefined;
 
     const hasRescheduleUnstarted = currentUser?.features.assistSettings.rescheduleUnstarted;
 
