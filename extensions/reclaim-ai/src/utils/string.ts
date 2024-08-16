@@ -1,6 +1,6 @@
 import { emojiFindingRegex } from "./emoji-helper";
 
-export function getFirstEmojiFromString(text: string): RegExpExecArray | null {
+export function getFirstEmojiFromString(text: string): string | undefined {
   let emoji;
   // try the simpler parser first
   // then complex emoji regex grabs flags but can fail some emojis
@@ -10,17 +10,15 @@ export function getFirstEmojiFromString(text: string): RegExpExecArray | null {
   if (emoji === null) {
     emoji = emojiFindingRegex().exec(text);
   }
-  return emoji;
+
+  if (!!emoji && emoji.index === 0) return emoji[0];
+  else return undefined;
 }
 
 export function stripPlannerEmojis(text: string): string {
   const emoji = getFirstEmojiFromString(text);
 
-  if (
-    emoji &&
-    emoji.index === 0 &&
-    (emoji[0] === "🆓" || emoji[0] === "🛡" || emoji[0] === "🔒" || emoji[0] === "✅" || emoji[0] === "⚠️")
-  ) {
+  if (emoji === "🆓" || emoji === "🛡" || emoji === "🔒" || emoji === "✅" || emoji === "⚠️") {
     const textWithoutEmoji = text.slice(2);
     return textWithoutEmoji;
   } else return text;

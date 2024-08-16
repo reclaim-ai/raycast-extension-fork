@@ -28,7 +28,10 @@ const useSmartHabits = () => {
 
   if (error) console.error("Error while fetching Smart Habits", error);
 
-  const smartHabitsByLineageIdsMap = useMemo(() => (smartHabits ? normalize(smartHabits, "lineageId") : undefined), []);
+  const smartHabitsByLineageIdsMap = useMemo(
+    () => (smartHabits ? normalize(smartHabits, "lineageId") : undefined),
+    [smartHabits]
+  );
 
   return {
     smartHabits,

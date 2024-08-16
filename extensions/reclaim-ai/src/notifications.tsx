@@ -162,8 +162,8 @@ export default function Command() {
 
       const isNow = isWithinInterval(new Date(), { start: eventStart, end: eventEnd });
 
-      const miniEventString = truncateEventSize(stripPlannerEmojis(realEventTitle));
       const eventString = stripPlannerEmojis(realEventTitle);
+      const miniEventString = truncateEventSize(eventString);
 
       const distanceString = miniDuration(
         formatDistance(new Date(eventStart), now, {
