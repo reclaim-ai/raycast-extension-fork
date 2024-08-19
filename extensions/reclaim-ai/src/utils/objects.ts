@@ -18,6 +18,7 @@ export function normalize<T, V extends string | number>(
   arr: readonly T[],
   idKeyOrFindId: KeysByValue<T, V> | ((item: T) => V)
 ): Record<string, T> {
+  // @ts-expect-error Parameter 'item' implicitly has an 'any' type.ts(7006)
   const findId = typeof idKeyOrFindId === "function" ? idKeyOrFindId : (item) => item[idKeyOrFindId];
   return arr.reduce((acc, obj) => {
     acc[findId(obj)] = obj;
