@@ -10,12 +10,12 @@ import {
   startOfDay,
 } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
+import { SNOOZE_OPTIONS } from "./consts/tasks.consts";
 import { useEventActions, useEvents } from "./hooks/useEvent";
 import { EventActions } from "./hooks/useEvent.types";
+import { useTaskActions } from "./hooks/useTask";
 import { Event } from "./types/event";
 import { eventColors } from "./utils/events";
-import { useTask } from "./hooks/useTask";
-import { SNOOZE_OPTIONS } from "./consts/tasks.consts";
 
 type EventSection = { section: string; sectionTitle: string; events: Event[] };
 
@@ -23,7 +23,7 @@ const EventActionsList = ({ event }: { event: Event }) => {
   const [eventActions, setEventActions] = useState<EventActions>([]);
 
   const { getEventActions } = useEventActions();
-  const { rescheduleTask } = useTask();
+  const { rescheduleTask } = useTaskActions();
 
   const loadEventActions = () => {
     const actions = getEventActions(event);

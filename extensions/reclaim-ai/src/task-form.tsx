@@ -1,13 +1,13 @@
 import { Action, ActionPanel, Clipboard, Form, Toast, popToRoot, showHUD, showToast } from "@raycast/api";
 import { addDays, addMinutes, setHours, setMilliseconds, setMinutes, setSeconds } from "date-fns";
 import { useEffect, useMemo, useState } from "react";
-import { useTask } from "./hooks/useTask";
+import { useTaskActions } from "./hooks/useTask";
 import { useTimePolicy } from "./hooks/useTimePolicy";
 import { useUser } from "./hooks/useUser";
-import { TimePolicy } from "./types/time-policy";
-import { TIME_BLOCK_IN_MINUTES, formatDuration, parseDurationToMinutes } from "./utils/dates";
 import { TaskPlanDetails } from "./types/plan";
+import { TimePolicy } from "./types/time-policy";
 import { makeOrderedListComparator } from "./utils/arrays";
+import { TIME_BLOCK_IN_MINUTES, formatDuration, parseDurationToMinutes } from "./utils/dates";
 
 export const timeSchemeTitleComparator = makeOrderedListComparator<string>(["Working Hours", "Personal Hours"]);
 
@@ -49,7 +49,7 @@ export default (props: Props) => {
   const { timeNeeded: userTimeNeeded, title: userTitle, interpreter } = props;
 
   const { currentUser } = useUser();
-  const { createTask } = useTask();
+  const { createTask } = useTaskActions();
   const { isLoading: isLoadingTimePolicy, getTimePolicy } = useTimePolicy();
 
   const defaults = useMemo(() => {
