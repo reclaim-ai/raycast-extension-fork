@@ -22,7 +22,7 @@ const useTask = () => {
   );
 
   const useFetchTasks = () =>
-    useFetch<[Task]>(`${apiUrl}/tasks?instances=true`, {
+    useFetch<Task[]>(`${apiUrl}/tasks?instances=true`, {
       headers,
       keepPreviousData: true,
     });
