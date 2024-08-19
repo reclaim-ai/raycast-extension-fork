@@ -37,6 +37,7 @@ export default function Command() {
   });
 
   const { momentData, isLoading: isLoadingMoment } = useMoment();
+
   /********************/
   /* useMemo & consts */
   /********************/
