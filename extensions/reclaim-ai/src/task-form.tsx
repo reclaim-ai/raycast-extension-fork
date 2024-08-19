@@ -50,7 +50,7 @@ export default (props: Props) => {
 
   const { currentUser } = useUser();
   const { createTask } = useTaskActions();
-  const { isLoading: isLoadingTimePolicy, getTimePolicy } = useTimePolicy();
+  const { filteredPoliciesByFeature, isLoading: isLoadingTimePolicy } = useTimePolicy("TASK_ASSIGNMENT");
 
   const defaults = useMemo(() => {
     // RAI-10338 respect user settings of no default due date and no default snooze date
@@ -141,11 +141,10 @@ export default (props: Props) => {
   };
 
   const loadTimePolicy = async () => {
-    const allPolicies = await getTimePolicy("TASK_ASSIGNMENT");
-    if (allPolicies) {
-      setTimePolicies(allPolicies);
+    if (filteredPoliciesByFeature) {
+      setTimePolicies(filteredPoliciesByFeature);
       if (interpreter?.personal) {
-        const personalPolicy = allPolicies.find((policy) => policy.policyType === "PERSONAL");
+        const personalPolicy = filteredPoliciesByFeature.find((policy) => policy.policyType === "PERSONAL");
         if (personalPolicy) {
           setTimePolicy(personalPolicy.id);
         }
