@@ -1,5 +1,8 @@
 # reclaim Changelog
 
+## [Fixes] - 2024-08-19
+- Handle ts eror
+
 ## [Fixes] - 2024-08-16
 - Handle possibly undefined
 
