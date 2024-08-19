@@ -16,25 +16,29 @@ export const useSchedulingLinks = () => {
     [apiToken]
   );
 
-  const { 
+  const {
     data: schedulingLinks,
     error: schedulingLinksError,
-    isLoading: schedulingLinksIsLoading 
+    isLoading: schedulingLinksIsLoading,
   } = useFetch<ApiSchedulingLink>(`${apiUrl}/scheduling-link`, {
-      headers,
-      keepPreviousData: true,
-      method: "GET",
-    });
+    headers,
+    keepPreviousData: true,
+    method: "GET",
+  });
 
-    const { 
-      data: schedulingLinksGroups,
-      error: schedulingLinksGroupsError,
-      isLoading: schedulingLinksGroupsIsLoading 
-    } = useFetch<ApiSchedulingLinkGroups>(`${apiUrl}/scheduling-link/group`, {
-      headers,
-      keepPreviousData: true,
-      method: "GET",
-    });
+  const {
+    data: schedulingLinksGroups,
+    error: schedulingLinksGroupsError,
+    isLoading: schedulingLinksGroupsIsLoading,
+  } = useFetch<ApiSchedulingLinkGroups>(`${apiUrl}/scheduling-link/group`, {
+    headers,
+    keepPreviousData: true,
+    method: "GET",
+  });
+
+  if (schedulingLinksError) console.error("Error while fetching Scheduling Links", schedulingLinksError);
+  if (schedulingLinksGroupsError)
+    console.error("Error while fetching Scheduling Links Groups", schedulingLinksGroupsError);
 
   return {
     schedulingLinks,
@@ -42,6 +46,6 @@ export const useSchedulingLinks = () => {
     schedulingLinksIsLoading,
     schedulingLinksGroups,
     schedulingLinksGroupsError,
-    schedulingLinksGroupsIsLoading
+    schedulingLinksGroupsIsLoading,
   };
 };

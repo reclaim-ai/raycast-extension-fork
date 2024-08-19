@@ -67,7 +67,8 @@ const ListDetailMetadataField = ({
 export default function Command() {
   const [searchText, setSearchText] = useState("");
 
-  const { schedulingLinks, schedulingLinksIsLoading, schedulingLinksGroups, schedulingLinksGroupsIsLoading} = useSchedulingLinks();
+  const { schedulingLinks, schedulingLinksIsLoading, schedulingLinksGroups, schedulingLinksGroupsIsLoading } =
+    useSchedulingLinks();
 
   const isLoading = schedulingLinksIsLoading || schedulingLinksGroupsIsLoading;
 
