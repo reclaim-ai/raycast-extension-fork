@@ -35,20 +35,19 @@ export const MenuBarEventSection: FC<MenuBarEventSectionProps> = ({ events, sect
   /********************/
 
   return (
-    <>
-      <MenuBarExtra.Section title={sectionTitle} />
+      <MenuBarExtra.Section title={sectionTitle}> 
       {events.map((event) => (
         <MenuBarExtra.Submenu
-          key={event.eventId}
-          icon={{
-            source: Icon.Dot,
-            tintColor: eventColors[event.color],
-          }}
-          title={showFormattedEventTitle(event, true)}
+        key={event.eventId}
+        icon={{
+          source: Icon.Dot,
+          tintColor: eventColors[event.color],
+        }}
+        title={showFormattedEventTitle(event, true)}
         >
           <MenuBarEventActionItems event={event} />
         </MenuBarExtra.Submenu>
       ))}
-    </>
+      </MenuBarExtra.Section>
   );
 };
