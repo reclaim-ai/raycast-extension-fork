@@ -3,11 +3,11 @@ import { useEventActions } from "../hooks/useEvent";
 import { Event } from "../types/event";
 import { MenuBarExtra, Icon } from "@raycast/api";
 import { eventColors } from "../utils/events";
-import { ActionOptionsWithContext } from "./ActionOptionsWithContext";
+import { MenuBarEventActionItems } from "./MenuBarEventActionItems";
 
-export type EventsSectionProps = { events: Event[]; sectionTitle: string };
+export type MenuBarEventSectionProps = { events: Event[]; sectionTitle: string };
 
-export const EventsSection: FC<EventsSectionProps> = ({ events, sectionTitle }) => {
+export const MenuBarEventSection: FC<MenuBarEventSectionProps> = ({ events, sectionTitle }) => {
   /********************/
   /*   custom hooks   */
   /********************/
@@ -46,7 +46,7 @@ export const EventsSection: FC<EventsSectionProps> = ({ events, sectionTitle }) 
           }}
           title={showFormattedEventTitle(event, true)}
         >
-          <ActionOptionsWithContext event={event} />
+          <MenuBarEventActionItems event={event} />
         </MenuBarExtra.Submenu>
       ))}
     </>

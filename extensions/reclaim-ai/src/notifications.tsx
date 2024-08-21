@@ -1,15 +1,15 @@
-import { Icon, LaunchType, MenuBarExtra, getPreferenceValues, launchCommand, open } from "@raycast/api";
+import { LaunchType, MenuBarExtra, getPreferenceValues, launchCommand, open } from "@raycast/api";
 import { addDays, differenceInHours, endOfDay, formatDistance, isWithinInterval, startOfDay } from "date-fns";
 import { useCallback, useMemo } from "react";
-import { useEventActions, useEvents } from "./hooks/useEvent";
+import { MenuBarEventSection } from "./components/MenuBarEventSection";
+import { useEvents } from "./hooks/useEvent";
 import { useMoment } from "./hooks/useMoment";
 import { useUser } from "./hooks/useUser";
 import { Event } from "./types/event";
 import { NativePreferences } from "./types/preferences";
 import { miniDuration } from "./utils/dates";
-import { eventColors, getOriginalEventIDFromSyncEvent, truncateEventSize } from "./utils/events";
+import { getOriginalEventIDFromSyncEvent, truncateEventSize } from "./utils/events";
 import { stripPlannerEmojis } from "./utils/string";
-import { EventsSection } from "./components/EventsSection";
 
 type EventSection = { section: string; sectionTitle: string; events: Event[] };
 
@@ -185,7 +185,7 @@ export default function Command() {
       tooltip={titleInfo.fullTitle}
     >
       {eventSections.map((eventSection) => (
-        <EventsSection
+        <MenuBarEventSection
           key={eventSection.section}
           events={eventSection.events}
           sectionTitle={eventSection.sectionTitle}

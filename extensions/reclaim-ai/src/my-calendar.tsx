@@ -1,7 +1,7 @@
 import { List } from "@raycast/api";
 import { addDays, differenceInHours, endOfDay, isAfter, isBefore, isWithinInterval, startOfDay } from "date-fns";
 import { useMemo, useState } from "react";
-import { ListSection } from "./components/ListSection";
+import { MyCalendarEventListSection } from "./components/MyCalendarEventListSection";
 import { useEvents } from "./hooks/useEvent";
 import { Event } from "./types/event";
 
@@ -88,7 +88,7 @@ export default function Command() {
       searchBarPlaceholder="Search your events"
     >
       {eventSections.map((section) => (
-        <ListSection key={section.section} sectionTitle={section.sectionTitle} events={section.events} />
+        <MyCalendarEventListSection key={section.section} sectionTitle={section.sectionTitle} events={section.events} />
       ))}
     </List>
   );

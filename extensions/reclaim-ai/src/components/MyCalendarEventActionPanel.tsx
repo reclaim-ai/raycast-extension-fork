@@ -6,9 +6,9 @@ import { useTaskActions } from "../hooks/useTask";
 import { Action, ActionPanel, Icon, showToast, Toast } from "@raycast/api";
 import { SNOOZE_OPTIONS } from "../consts/tasks.consts";
 
-export type EventActionsListProps = { event: Event };
+export type MyCalendarEventActionPanelProps = { event: Event };
 
-export const EventActionsList: FC<EventActionsListProps> = ({ event }) => {
+export const MyCalendarEventActionPanel: FC<MyCalendarEventActionPanelProps> = ({ event }) => {
   /********************/
   /*   custom hooks   */
   /********************/

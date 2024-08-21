@@ -3,9 +3,9 @@ import { Event } from "../types/event";
 import { useEventActions } from "../hooks/useEvent";
 import { MenuBarExtra } from "@raycast/api";
 
-export type ActionOptionsWithContextProps = { event: Event };
+export type MenuBarEventActionItemsProps = { event: Event };
 
-export const ActionOptionsWithContext: FC<ActionOptionsWithContextProps> = ({ event }) => {
+export const MenuBarEventActionItems: FC<MenuBarEventActionItemsProps> = ({ event }) => {
   /********************/
   /*   custom hooks   */
   /********************/

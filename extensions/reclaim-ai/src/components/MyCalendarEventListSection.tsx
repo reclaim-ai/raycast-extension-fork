@@ -4,11 +4,11 @@ import { useEventActions } from "../hooks/useEvent";
 import { Color, Icon, List } from "@raycast/api";
 import { formatDistance } from "date-fns";
 import { eventColors } from "../utils/events";
-import { EventActionsList } from "./EventActionsList";
+import { MyCalendarEventActionPanel } from "./MyCalendarEventActionPanel";
 
-export type ListSectionProps = { sectionTitle: string; events: Event[] };
+export type MyCalendarEventListSectionProps = { sectionTitle: string; events: Event[] };
 
-export const ListSection: FC<ListSectionProps> = ({ sectionTitle, events }) => {
+export const MyCalendarEventListSection: FC<MyCalendarEventListSectionProps> = ({ sectionTitle, events }) => {
   /********************/
   /*   custom hooks   */
   /********************/
@@ -55,7 +55,7 @@ export const ListSection: FC<ListSectionProps> = ({ sectionTitle, events }) => {
             },
             { tag: { value: item.free ? "free" : "busy", color: Color.Blue } },
           ]}
-          actions={<EventActionsList event={item} />}
+          actions={<MyCalendarEventActionPanel event={item} />}
         />
       ))}
     </List.Section>
