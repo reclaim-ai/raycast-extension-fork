@@ -20,9 +20,9 @@ const SLActions = ({ link }: { link: SchedulingLink }) => {
     const [oneOff, error] = await nodeFetchPromiseData<SchedulingLink>(
       fetcher("/scheduling-link/derivative", {
         method: "POST",
-        data: {
+        body: JSON.stringify({
           parentId: link.id,
-        },
+        }),
       })
     );
 

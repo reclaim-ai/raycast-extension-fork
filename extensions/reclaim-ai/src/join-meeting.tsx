@@ -33,7 +33,7 @@ const joinMeeting = async (event: ApiResponseMoment["event"]) => {
 
     // try fetching original event
     const [eventRequest, eventError] = await nodeFetchPromiseData<ApiResponseEvents[number]>(
-      fetcher(`${apiUrl}/events/${id}`)
+      fetcher(`${apiUrl}/events/${id}`) //do i need apiUrl here?
     );
 
     if (eventError || !eventRequest) {
@@ -56,7 +56,9 @@ export default async function Command() {
   await closeMainWindow();
   await showHUD("Joining meeting...");
 
-  const [momentRequest, momentError] = await nodeFetchPromiseData<ApiResponseMoment>(fetcher(`${apiUrl}/moment/next`));
+  const [momentRequest, momentError] = await nodeFetchPromiseData<ApiResponseMoment>(fetcher(`${apiUrl}/moment/next`)); //do i need apiUrl here?
+
+  console.log("=>momentRequest", momentRequest);
 
   if (momentError || !momentRequest) {
     console.error(momentError);
