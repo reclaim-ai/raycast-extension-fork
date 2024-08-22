@@ -5,16 +5,16 @@ import { useMemo } from "react";
 import { Event } from "../types/event";
 import { NativePreferences } from "../types/preferences";
 import { SmartHabit } from "../types/smart-series";
-import { axiosPromiseData } from "../utils/axiosPromise";
 import { formatDisplayEventHours, formatDisplayHours } from "../utils/dates";
 import { filterMultipleOutDuplicateEvents } from "../utils/events";
 import { stripPlannerEmojis } from "../utils/string";
-import reclaimApi from "./useApi";
+import useApi from "./useApi";
 import { useCallbackSafeRef } from "./useCallbackSafeRef";
 import { ApiResponseEvents, EventActions } from "./useEvent.types";
 import { useSmartHabits } from "./useSmartHabits";
 import { useTaskActions } from "./useTask";
 import { useUser } from "./useUser";
+import { nodeFetchPromiseData } from "../utils/fetcher";
 
 export const useEvents = ({ start, end }: { start: Date; end: Date }) => {
   const { apiUrl, apiToken } = getPreferenceValues<NativePreferences>();
@@ -55,7 +55,7 @@ export const useEvents = ({ start, end }: { start: Date; end: Date }) => {
 };
 
 export const useEventActions = () => {
-  const { fetcher } = reclaimApi();
+  const { fetcher } = useApi();
   const { currentUser } = useUser();
   const { startTask, restartTask, stopTask } = useTaskActions();
   const { apiUrl } = getPreferenceValues<NativePreferences>();
@@ -80,7 +80,7 @@ export const useEventActions = () => {
   const handleStartHabit = async (id: string, title: string) => {
     try {
       await showHUD("Started Habit: " + stripPlannerEmojis(title));
-      const [habit, error] = await axiosPromiseData(fetcher(`/planner/start/habit/${id}`, { method: "POST" }));
+      const [habit, error] = await nodeFetchPromiseData(fetcher(`/planner/start/habit/${id}`, { method: "POST" }));
       if (!habit || error) throw error;
       return habit;
     } catch (error) {
@@ -92,7 +92,7 @@ export const useEventActions = () => {
   const handleRestartHabit = async (id: string, title: string) => {
     try {
       await showHUD("Restarted Habit: " + stripPlannerEmojis(title));
-      const [habit, error] = await axiosPromiseData(fetcher(`/planner/restart/habit/${id}`, { method: "POST" }));
+      const [habit, error] = await nodeFetchPromiseData(fetcher(`/planner/restart/habit/${id}`, { method: "POST" }));
       if (!habit || error) throw error;
       return habit;
     } catch (error) {
@@ -104,7 +104,7 @@ export const useEventActions = () => {
   const handleStopHabit = async (id: string, title: string) => {
     try {
       await showHUD("Stopped Habit: " + stripPlannerEmojis(title));
-      const [habit, error] = await axiosPromiseData(fetcher(`/planner/stop/habit/${id}`, { method: "POST" }));
+      const [habit, error] = await nodeFetchPromiseData(fetcher(`/planner/stop/habit/${id}`, { method: "POST" }));
       if (!habit || error) throw error;
 
       return habit;
@@ -117,7 +117,7 @@ export const useEventActions = () => {
   const handleStartOrRestartSmartHabit = async (lineageId: string, title: string) => {
     try {
       await showHUD("Started Habit: " + stripPlannerEmojis(title));
-      const [habit, error] = await axiosPromiseData(
+      const [habit, error] = await nodeFetchPromiseData(
         fetcher(`/smart-habits/planner/${lineageId}/start`, { method: "POST" })
       );
       if (!habit || error) throw error;
@@ -132,7 +132,7 @@ export const useEventActions = () => {
   const handleStopSmartHabit = async (lineageId: string, title: string) => {
     try {
       await showHUD("Stopped Habit: " + stripPlannerEmojis(title));
-      const [habit, error] = await axiosPromiseData(
+      const [habit, error] = await nodeFetchPromiseData(
         fetcher(`/smart-habits/planner/${lineageId}/stop`, { method: "POST" })
       );
       if (!habit || error) throw error;

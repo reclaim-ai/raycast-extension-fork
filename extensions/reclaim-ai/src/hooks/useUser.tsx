@@ -1,15 +1,15 @@
 import { Cache } from "@raycast/api";
 import { useEffect, useState } from "react";
 import { User } from "../types/user";
-import { axiosPromiseData } from "../utils/axiosPromise";
-import reclaimApi from "./useApi";
+import { nodeFetchPromiseData } from "../utils/fetcher";
+import useApi from "./useApi";
 import { useCallbackSafeRef } from "./useCallbackSafeRef";
 import { ApiResponseUser } from "./useUser.types";
 
 const cache = new Cache();
 
 const useUser = () => {
-  const { fetcher } = reclaimApi();
+  const { fetcher } = useApi();
 
   const cachedUserObj = cache.get("user");
   const cachedUserDate = cache.get("userDate");
@@ -29,7 +29,7 @@ const useUser = () => {
       }
       setIsLoading(true);
 
-      const [user, error] = await axiosPromiseData<ApiResponseUser>(fetcher("/users/current"));
+      const [user, error] = await nodeFetchPromiseData<ApiResponseUser>(fetcher("/users/current"));
 
       if (!user || error) throw error;
 

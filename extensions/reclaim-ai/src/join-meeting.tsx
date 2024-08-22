@@ -1,8 +1,9 @@
 import { closeMainWindow, getPreferenceValues, open, showHUD } from "@raycast/api";
 import { ApiResponseEvents, ApiResponseMoment } from "./hooks/useEvent.types";
 import { NativePreferences } from "./types/preferences";
-import { axiosPromiseData, fetcher } from "./utils/axiosPromise";
 import { getOriginalEventIDFromSyncEvent } from "./utils/events";
+import { nodeFetchPromiseData } from "./utils/fetcher";
+import useApi from "./hooks/useApi";
 /**
  * This function is used to join a meeting.
  * If it succeeds, it returns true.
@@ -17,6 +18,8 @@ import { getOriginalEventIDFromSyncEvent } from "./utils/events";
  */
 const joinMeeting = async (event: ApiResponseMoment["event"]) => {
   const { apiUrl } = getPreferenceValues<NativePreferences>();
+  const { fetcher } = useApi();
+
   if (!event) return false;
 
   // If event has a meeting URL, open it
@@ -29,7 +32,7 @@ const joinMeeting = async (event: ApiResponseMoment["event"]) => {
     if (!id) return false;
 
     // try fetching original event
-    const [eventRequest, eventError] = await axiosPromiseData<ApiResponseEvents[number]>(
+    const [eventRequest, eventError] = await nodeFetchPromiseData<ApiResponseEvents[number]>(
       fetcher(`${apiUrl}/events/${id}`)
     );
 
@@ -48,11 +51,12 @@ const joinMeeting = async (event: ApiResponseMoment["event"]) => {
 
 export default async function Command() {
   const { apiUrl } = getPreferenceValues<NativePreferences>();
+  const { fetcher } = useApi();
 
   await closeMainWindow();
   await showHUD("Joining meeting...");
 
-  const [momentRequest, momentError] = await axiosPromiseData<ApiResponseMoment>(fetcher(`${apiUrl}/moment/next`));
+  const [momentRequest, momentError] = await nodeFetchPromiseData<ApiResponseMoment>(fetcher(`${apiUrl}/moment/next`));
 
   if (momentError || !momentRequest) {
     console.error(momentError);

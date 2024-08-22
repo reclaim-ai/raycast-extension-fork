@@ -1,5 +1,5 @@
 import { SchedulingLinkPlanDetails, TaskPlanDetails } from "../types/plan";
-import { axiosPromiseData } from "../utils/axiosPromise";
+import { nodeFetchPromiseData } from "../utils/fetcher";
 import useApi from "./useApi";
 import { ApiResponseInterpreter } from "./useInterpreter.types";
 
@@ -16,7 +16,7 @@ const useInterpreter = () => {
         category,
       };
 
-      const [response, error] = await axiosPromiseData<ApiResponseInterpreter<T>>(
+      const [response, error] = await nodeFetchPromiseData<ApiResponseInterpreter<T>>(
         fetcher("/interpreter/message", {
           method: "POST",
           data,

@@ -3,8 +3,8 @@ import { useFetch } from "@raycast/utils";
 import { useMemo } from "react";
 import { NativePreferences } from "../types/preferences";
 import { Task } from "../types/task";
-import { axiosPromiseData } from "../utils/axiosPromise";
-import reclaimApi from "./useApi";
+import { nodeFetchPromiseData } from "../utils/fetcher";
+import useApi from "./useApi";
 import { CreateTaskProps } from "./useTask.types";
 
 export const useTasks = () => {
@@ -38,7 +38,7 @@ export const useTasks = () => {
 };
 
 export const useTaskActions = () => {
-  const { fetcher } = reclaimApi();
+  const { fetcher } = useApi();
 
   const createTask = async (task: CreateTaskProps) => {
     try {
@@ -57,7 +57,7 @@ export const useTaskActions = () => {
         onDeck: task.onDeck,
       };
 
-      const [createdTask, error] = await axiosPromiseData<Task>(
+      const [createdTask, error] = await nodeFetchPromiseData<Task>(
         fetcher("/tasks", {
           method: "POST",
           data,
@@ -73,7 +73,7 @@ export const useTaskActions = () => {
 
   const startTask = async (id: string) => {
     try {
-      const [task, error] = await axiosPromiseData(fetcher(`/planner/start/task/${id}`, { method: "POST" }));
+      const [task, error] = await nodeFetchPromiseData(fetcher(`/planner/start/task/${id}`, { method: "POST" }));
       if (!task || error) throw error;
       return task;
     } catch (error) {
@@ -83,7 +83,7 @@ export const useTaskActions = () => {
 
   const restartTask = async (id: string) => {
     try {
-      const [task, error] = await axiosPromiseData(fetcher(`/planner/restart/task/${id}`, { method: "POST" }));
+      const [task, error] = await nodeFetchPromiseData(fetcher(`/planner/restart/task/${id}`, { method: "POST" }));
       if (!task || error) throw error;
       return task;
     } catch (error) {
@@ -93,7 +93,7 @@ export const useTaskActions = () => {
 
   const stopTask = async (id: string) => {
     try {
-      const [task, error] = await axiosPromiseData(fetcher(`/planner/stop/task/${id}`, { method: "POST" }));
+      const [task, error] = await nodeFetchPromiseData(fetcher(`/planner/stop/task/${id}`, { method: "POST" }));
       if (!task || error) throw error;
       return task;
     } catch (error) {
@@ -104,7 +104,7 @@ export const useTaskActions = () => {
   // Add time
   const addTime = async (task: Task, time: number) => {
     try {
-      const [updatedTime, error] = await axiosPromiseData(
+      const [updatedTime, error] = await nodeFetchPromiseData(
         fetcher(`/planner/add-time/task/${task.id}?minutes=${time}`, { method: "POST", responseType: "json" })
       );
       if (!updatedTime || error) throw error;
@@ -117,7 +117,7 @@ export const useTaskActions = () => {
   // Update task
   const updateTask = async (task: Partial<Task>, payload: Partial<Task>) => {
     try {
-      const [updatedTask] = await axiosPromiseData(
+      const [updatedTask] = await nodeFetchPromiseData(
         fetcher(`/tasks/${task.id}`, {
           method: "PATCH",
           responseType: "json",
@@ -134,7 +134,7 @@ export const useTaskActions = () => {
   // Set task to done
   const doneTask = async (task: Task) => {
     try {
-      const [updatedStatus, error] = await axiosPromiseData(
+      const [updatedStatus, error] = await nodeFetchPromiseData(
         fetcher(`/planner/done/task/${task.id}`, { method: "POST", responseType: "json" })
       );
       if (!updatedStatus || error) throw error;
@@ -147,7 +147,7 @@ export const useTaskActions = () => {
   // Set task to incomplete
   const incompleteTask = async (task: Task) => {
     try {
-      const [updatedStatus, error] = await axiosPromiseData(
+      const [updatedStatus, error] = await nodeFetchPromiseData(
         fetcher(`/planner/unarchive/task/${task.id}`, { method: "POST", responseType: "json" })
       );
       if (!updatedStatus || error) throw error;
@@ -160,7 +160,7 @@ export const useTaskActions = () => {
   // Snooze Task
   const rescheduleTask = async (taskId: string, rescheduleCommand: string, relativeFrom?: string) => {
     try {
-      const [task, error] = await axiosPromiseData(
+      const [task, error] = await nodeFetchPromiseData(
         fetcher(
           `/planner/task/${taskId}/snooze?snoozeOption=${rescheduleCommand}&relativeFrom=${
             relativeFrom ? relativeFrom : null
