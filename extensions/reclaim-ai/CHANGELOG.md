@@ -1,5 +1,8 @@
 # reclaim Changelog
 
+## [Fixes] - 2024-08-22
+- Remove axios and use node-fetch
+
 ## [Fixes] - 2024-08-21
 - Add useCallbackSafeRef hook
 - Fix component wrapping that was causing UI glitch
