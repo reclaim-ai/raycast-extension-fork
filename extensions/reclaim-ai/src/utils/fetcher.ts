@@ -18,7 +18,7 @@ export async function nodeFetchPromiseData<T>(
 const { apiToken, apiUrl } = getPreferenceValues<NativePreferences>();
 
 export const fetcher = async <T>(url: string, options?: RequestInit): Promise<T> =>
-  fetch(`${apiUrl}/${url}`, {
+  fetch(`${apiUrl}${url}`, {
     ...options,
     headers: {
       Authorization: `Bearer ${apiToken}`,

@@ -60,7 +60,7 @@ export const useTaskActions = () => {
       const [createdTask, error] = await nodeFetchPromiseData<Task>(
         fetcher("/tasks", {
           method: "POST",
-          data,
+          body: JSON.stringify(data)
         })
       );
       if (!createTask && error) throw error;
@@ -105,7 +105,10 @@ export const useTaskActions = () => {
   const addTime = async (task: Task, time: number) => {
     try {
       const [updatedTime, error] = await nodeFetchPromiseData(
-        fetcher(`/planner/add-time/task/${task.id}?minutes=${time}`, { method: "POST", responseType: "json" })
+        fetcher(`/planner/add-time/task/${task.id}?minutes=${time}`, {
+          method: "POST",
+          //  responseType: "json"
+        })
       );
       if (!updatedTime || error) throw error;
       return updatedTime;
@@ -120,7 +123,7 @@ export const useTaskActions = () => {
       const [updatedTask] = await nodeFetchPromiseData(
         fetcher(`/tasks/${task.id}`, {
           method: "PATCH",
-          responseType: "json",
+          // responseType: "json",
           data: payload,
         })
       );
@@ -135,7 +138,10 @@ export const useTaskActions = () => {
   const doneTask = async (task: Task) => {
     try {
       const [updatedStatus, error] = await nodeFetchPromiseData(
-        fetcher(`/planner/done/task/${task.id}`, { method: "POST", responseType: "json" })
+        fetcher(`/planner/done/task/${task.id}`, {
+          method: "POST",
+          // responseType: "json"
+        })
       );
       if (!updatedStatus || error) throw error;
       return updatedStatus;
@@ -148,7 +154,10 @@ export const useTaskActions = () => {
   const incompleteTask = async (task: Task) => {
     try {
       const [updatedStatus, error] = await nodeFetchPromiseData(
-        fetcher(`/planner/unarchive/task/${task.id}`, { method: "POST", responseType: "json" })
+        fetcher(`/planner/unarchive/task/${task.id}`, {
+          method: "POST",
+          // responseType: "json"
+        })
       );
       if (!updatedStatus || error) throw error;
       return updatedStatus;
