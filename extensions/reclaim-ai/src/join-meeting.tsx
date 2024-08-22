@@ -1,9 +1,8 @@
-import { closeMainWindow, getPreferenceValues, open, showHUD } from "@raycast/api";
+import { closeMainWindow, open, showHUD } from "@raycast/api";
+import useApi from "./hooks/useApi";
 import { ApiResponseEvents, ApiResponseMoment } from "./hooks/useEvent.types";
-import { NativePreferences } from "./types/preferences";
 import { getOriginalEventIDFromSyncEvent } from "./utils/events";
 import { nodeFetchPromiseData } from "./utils/fetcher";
-import useApi from "./hooks/useApi";
 /**
  * This function is used to join a meeting.
  * If it succeeds, it returns true.
@@ -17,7 +16,6 @@ import useApi from "./hooks/useApi";
  * @returns {Promise<boolean>} - Returns a promise that resolves to a boolean indicating whether the meeting was joined successfully.
  */
 const joinMeeting = async (event: ApiResponseMoment["event"]) => {
-  const { apiUrl } = getPreferenceValues<NativePreferences>();
   const { fetcher } = useApi();
 
   if (!event) return false;
@@ -33,7 +31,7 @@ const joinMeeting = async (event: ApiResponseMoment["event"]) => {
 
     // try fetching original event
     const [eventRequest, eventError] = await nodeFetchPromiseData<ApiResponseEvents[number]>(
-      fetcher(`${apiUrl}/events/${id}`) //do i need apiUrl here?
+      fetcher(`/events/${id}`) //do i need apiUrl here?
     );
 
     if (eventError || !eventRequest) {
@@ -50,15 +48,12 @@ const joinMeeting = async (event: ApiResponseMoment["event"]) => {
 };
 
 export default async function Command() {
-  const { apiUrl } = getPreferenceValues<NativePreferences>();
   const { fetcher } = useApi();
 
   await closeMainWindow();
   await showHUD("Joining meeting...");
 
-  const [momentRequest, momentError] = await nodeFetchPromiseData<ApiResponseMoment>(fetcher(`${apiUrl}/moment/next`)); //do i need apiUrl here?
-
-  console.log("=>momentRequest", momentRequest);
+  const [momentRequest, momentError] = await nodeFetchPromiseData<ApiResponseMoment>(fetcher(`/moment/next`));
 
   if (momentError || !momentRequest) {
     console.error(momentError);

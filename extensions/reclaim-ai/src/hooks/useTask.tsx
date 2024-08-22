@@ -5,8 +5,7 @@ import { NativePreferences } from "../types/preferences";
 import { Task } from "../types/task";
 import { nodeFetchPromiseData } from "../utils/fetcher";
 import useApi from "./useApi";
-import { CreateTaskProps } from "./useTask.types";
-import { stripPlannerEmojis } from "../utils/string";
+import { CreateTaskProps, PlannerActionIntermediateResult } from "./useTask.types";
 
 export const useTasks = () => {
   const { apiUrl, apiToken } = getPreferenceValues<NativePreferences>();
@@ -65,8 +64,6 @@ export const useTaskActions = () => {
         })
       );
       if (!createTask && error) throw error;
-      await showHUD(`Created Task: ${createdTask?.title ? stripPlannerEmojis(createdTask?.title) : ""}`);
-
       return createdTask;
     } catch (error) {
       console.error("Error while creating task", error);
@@ -75,10 +72,12 @@ export const useTaskActions = () => {
 
   const startTask = async (id: string) => {
     try {
-      const [task, error] = await nodeFetchPromiseData<Task>(fetcher(`/planner/start/task/${id}`, { method: "POST" }));
-      if (!task || error) throw error;
+      const [intermediateResult, error] = await nodeFetchPromiseData<PlannerActionIntermediateResult>(
+        fetcher(`/planner/start/task/${id}`, { method: "POST" })
+      );
+      if (!intermediateResult || error) throw error;
       await showHUD("Started Task");
-      return task;
+      return intermediateResult;
     } catch (error) {
       console.error("Error while starting task", error);
     }
@@ -86,12 +85,12 @@ export const useTaskActions = () => {
 
   const restartTask = async (id: string) => {
     try {
-      const [task, error] = await nodeFetchPromiseData<Task>(
+      const [intermediateResult, error] = await nodeFetchPromiseData<PlannerActionIntermediateResult>(
         fetcher(`/planner/restart/task/${id}`, { method: "POST" })
       );
-      if (!task || error) throw error;
+      if (!intermediateResult || error) throw error;
       await showHUD("Restarted Task");
-      return task;
+      return intermediateResult;
     } catch (error) {
       console.error("Error while restarting task", error);
     }
@@ -99,10 +98,12 @@ export const useTaskActions = () => {
 
   const stopTask = async (id: string) => {
     try {
-      const [task, error] = await nodeFetchPromiseData<Task>(fetcher(`/planner/stop/task/${id}`, { method: "POST" }));
-      if (!task || error) throw error;
+      const [intermediateResult, error] = await nodeFetchPromiseData<PlannerActionIntermediateResult>(
+        fetcher(`/planner/stop/task/${id}`, { method: "POST" })
+      );
+      if (!intermediateResult || error) throw error;
       await showHUD("Stopped Task");
-      return task;
+      return intermediateResult;
     } catch (error) {
       console.error("Error while stopping task", error);
     }
@@ -111,14 +112,14 @@ export const useTaskActions = () => {
   // Add time
   const addTime = async (task: Task, time: number) => {
     try {
-      const [updatedTime, error] = await nodeFetchPromiseData(
+      const [intermediateResult, error] = await nodeFetchPromiseData<PlannerActionIntermediateResult>(
         fetcher(`/planner/add-time/task/${task.id}?minutes=${time}`, {
           method: "POST",
         })
       );
-      if (!updatedTime || error) throw error;
+      if (!intermediateResult || error) throw error;
       await showHUD("Added time to Task");
-      return updatedTime;
+      return intermediateResult;
     } catch (error) {
       console.error("Error while adding time", error);
     }
@@ -144,14 +145,14 @@ export const useTaskActions = () => {
   // Set task to done
   const doneTask = async (task: Task) => {
     try {
-      const [updatedStatus, error] = await nodeFetchPromiseData(
+      const [intermediateResult, error] = await nodeFetchPromiseData<PlannerActionIntermediateResult>(
         fetcher(`/planner/done/task/${task.id}`, {
           method: "POST",
         })
       );
-      if (!updatedStatus || error) throw error;
+      if (!intermediateResult || error) throw error;
       await showHUD("Marked Task as complete");
-      return updatedStatus;
+      return intermediateResult;
     } catch (error) {
       console.error("Error while updating task", error);
     }
@@ -160,14 +161,14 @@ export const useTaskActions = () => {
   // Set task to incomplete
   const incompleteTask = async (task: Task) => {
     try {
-      const [updatedStatus, error] = await nodeFetchPromiseData(
+      const [intermediateResult, error] = await nodeFetchPromiseData<PlannerActionIntermediateResult>(
         fetcher(`/planner/unarchive/task/${task.id}`, {
           method: "POST",
         })
       );
-      if (!updatedStatus || error) throw error;
+      if (!intermediateResult || error) throw error;
       await showHUD("Marked Task as incomplete");
-      return updatedStatus;
+      return intermediateResult;
     } catch (error) {
       console.error("Error while updating task", error);
     }
@@ -176,7 +177,7 @@ export const useTaskActions = () => {
   // Snooze Task
   const rescheduleTask = async (taskId: string, rescheduleCommand: string, relativeFrom?: string) => {
     try {
-      const [task, error] = await nodeFetchPromiseData<Task>(
+      const [intermediateResult, error] = await nodeFetchPromiseData<PlannerActionIntermediateResult>(
         fetcher(
           `/planner/task/${taskId}/snooze?snoozeOption=${rescheduleCommand}&relativeFrom=${
             relativeFrom ? relativeFrom : null
@@ -186,9 +187,9 @@ export const useTaskActions = () => {
           }
         )
       );
-      if (!task || error) throw error;
+      if (!intermediateResult || error) throw error;
       await showHUD("Rescheduled Task");
-      return task;
+      return intermediateResult;
     } catch (error) {
       console.error("Error while rescheduling event", error);
     }
