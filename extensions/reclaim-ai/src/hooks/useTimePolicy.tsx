@@ -27,8 +27,6 @@ export const useTimePolicy = () => {
 
   if (error) console.error("Error while fetching Time Policies", error);
 
-  console.log("=>timePolicies", timePolicies);
-
   return {
     timePolicies,
     error,

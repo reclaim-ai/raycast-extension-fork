@@ -1,6 +1,7 @@
 import { Action, ActionPanel, Clipboard, Form, Toast, popToRoot, showHUD, showToast } from "@raycast/api";
 import { addDays, addMinutes, setHours, setMilliseconds, setMinutes, setSeconds } from "date-fns";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useCallbackSafeRef } from "./hooks/useCallbackSafeRef";
 import { useTaskActions } from "./hooks/useTask";
 import { useTimePolicy } from "./hooks/useTimePolicy";
 import { useUser } from "./hooks/useUser";
@@ -119,7 +120,7 @@ export default (props: Props) => {
   /*    useCallback   */
   /********************/
 
-  const handleSubmit = async (formValues: FormValues) => {
+  const handleSubmit = useCallbackSafeRef(async (formValues: FormValues) => {
     await showToast(Toast.Style.Animated, "Creating Task...");
     const { timeNeeded, durationMin, durationMax, snoozeUntil, due, notes, title, timePolicy, priority, onDeck } =
       formValues;
@@ -160,26 +161,18 @@ export default (props: Props) => {
     } else {
       await showToast(Toast.Style.Failure, "Something went wrong", `Task ${title} not created`);
     }
-  };
-
-  const loadTimePolicy = async () => {
-    if (filteredPolicies) {
-      if (interpreter?.personal) {
-        const personalPolicy = filteredPolicies.find((policy) => policy.policyType === "PERSONAL");
-        if (personalPolicy) {
-          setTimePolicyId(personalPolicy.id);
-        }
-      }
-    }
-  };
+  });
 
   /********************/
   /*    useEffects    */
   /********************/
 
   useEffect(() => {
-    void loadTimePolicy();
-  }, []);
+    if (filteredPolicies && interpreter?.personal) {
+      const personalPolicy = filteredPolicies.find((policy) => policy.policyType === "PERSONAL");
+      if (personalPolicy) setTimePolicyId(personalPolicy.id);
+    }
+  }, [filteredPolicies, interpreter]);
 
   /********************/
   /*       JSX        */
@@ -256,12 +249,7 @@ export default (props: Props) => {
         }}
       />
 
-      <Form.Dropdown
-        id="timePolicy"
-        title="Hours"
-        value={timePolicyId}
-        onChange={setTimePolicyId}
-      >
+      <Form.Dropdown id="timePolicy" title="Hours" value={timePolicyId} onChange={setTimePolicyId}>
         {filteredPolicies?.map((policy) => (
           <Form.Dropdown.Item key={policy.id} title={policy.title} value={policy.id} />
         ))}
