@@ -1,11 +1,10 @@
 import { Action, ActionPanel, Clipboard, Form, Toast, popToRoot, showHUD, showToast } from "@raycast/api";
 import { addDays, addMinutes, setHours, setMilliseconds, setMinutes, setSeconds } from "date-fns";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTaskActions } from "./hooks/useTask";
 import { useTimePolicy } from "./hooks/useTimePolicy";
 import { useUser } from "./hooks/useUser";
 import { TaskPlanDetails } from "./types/plan";
-import { TimePolicy } from "./types/time-policy";
 import { makeOrderedListComparator } from "./utils/arrays";
 import { TIME_BLOCK_IN_MINUTES, formatDuration, parseDurationToMinutes } from "./utils/dates";
 
@@ -48,9 +47,17 @@ const getDefaultDueDate = (defaultDueDatePreference: number | undefined) => {
 export default (props: Props) => {
   const { timeNeeded: userTimeNeeded, title: userTitle, interpreter } = props;
 
+  /********************/
+  /*   custom hooks   */
+  /********************/
+
   const { currentUser } = useUser();
   const { createTask } = useTaskActions();
-  const { filteredPoliciesByFeature, isLoading: isLoadingTimePolicy } = useTimePolicy("TASK_ASSIGNMENT");
+  const { timePolicies, isLoading: isLoadingTimePolicy } = useTimePolicy();
+
+  /********************/
+  /*     useState     */
+  /********************/
 
   const defaults = useMemo(() => {
     // RAI-10338 respect user settings of no default due date and no default snooze date
@@ -89,13 +96,28 @@ export default (props: Props) => {
   const [timeNeededError, setTimeNeededError] = useState<string | undefined>();
   const [durationMinError, setDurationMinError] = useState<string | undefined>();
   const [durationMaxError, setDurationMaxError] = useState<string | undefined>();
-  const [timePolicies, setTimePolicies] = useState<TimePolicy[] | undefined>();
-  const [timePolicy, setTimePolicy] = useState<string>("");
+  const [timePolicyId, setTimePolicyId] = useState<string>("");
 
   const [due, setDue] = useState<Date | null>(interpreter?.due ? new Date(interpreter.due) : defaults.defaultDueDate);
   const [snooze, setSnooze] = useState<Date | null>(
     interpreter?.snoozeUntil ? new Date(interpreter.snoozeUntil) : defaults.defaultSnoozeDate
   );
+
+  /********************/
+  /* useMemo & consts */
+  /********************/
+
+  const filteredPolicies = useMemo(
+    () =>
+      timePolicies
+        ?.filter((policy) => !!policy.features.find((f) => f === "TASK_ASSIGNMENT"))
+        .sort((a, b) => timeSchemeTitleComparator(a.title, b.title)),
+    [timePolicies]
+  );
+
+  /********************/
+  /*    useCallback   */
+  /********************/
 
   const handleSubmit = async (formValues: FormValues) => {
     await showToast(Toast.Style.Animated, "Creating Task...");
@@ -106,7 +128,7 @@ export default (props: Props) => {
     const _durationMin = parseDurationToMinutes(durationMin) / TIME_BLOCK_IN_MINUTES;
     const _durationMax = parseDurationToMinutes(durationMax) / TIME_BLOCK_IN_MINUTES;
 
-    const selectedTimePolicy = timePolicies?.find((policy) => policy.id === timePolicy);
+    const selectedTimePolicy = filteredPolicies?.find((policy) => policy.id === timePolicy);
 
     if (!selectedTimePolicy) {
       await showToast(Toast.Style.Failure, "Something went wrong", `Task ${title} not created`);
@@ -141,31 +163,27 @@ export default (props: Props) => {
   };
 
   const loadTimePolicy = async () => {
-    if (filteredPoliciesByFeature) {
-      setTimePolicies(filteredPoliciesByFeature);
+    if (filteredPolicies) {
       if (interpreter?.personal) {
-        const personalPolicy = filteredPoliciesByFeature.find((policy) => policy.policyType === "PERSONAL");
+        const personalPolicy = filteredPolicies.find((policy) => policy.policyType === "PERSONAL");
         if (personalPolicy) {
-          setTimePolicy(personalPolicy.id);
+          setTimePolicyId(personalPolicy.id);
         }
       }
     }
   };
 
-  const timePolicyOptionsSorted = useMemo(() => {
-    return timePolicies
-      ? timePolicies
-          .map((policy) => ({
-            title: policy.title,
-            value: policy.id,
-          }))
-          .sort((a, b) => timeSchemeTitleComparator(a.title, b.title))
-      : [];
-  }, [timePolicies]);
+  /********************/
+  /*    useEffects    */
+  /********************/
 
   useEffect(() => {
     void loadTimePolicy();
   }, []);
+
+  /********************/
+  /*       JSX        */
+  /********************/
 
   return (
     <Form
@@ -238,9 +256,14 @@ export default (props: Props) => {
         }}
       />
 
-      <Form.Dropdown id="timePolicy" title="Hours" value={timePolicy} onChange={setTimePolicy}>
-        {timePolicyOptionsSorted?.map((policy) => (
-          <Form.Dropdown.Item key={policy.value} title={policy.title} value={policy.value} />
+      <Form.Dropdown
+        id="timePolicy"
+        title="Hours"
+        value={timePolicyId}
+        onChange={setTimePolicyId}
+      >
+        {filteredPolicies?.map((policy) => (
+          <Form.Dropdown.Item key={policy.id} title={policy.title} value={policy.id} />
         ))}
       </Form.Dropdown>
       <Form.DatePicker
