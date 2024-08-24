@@ -1,5 +1,8 @@
 # reclaim Changelog
 
+## [Fixes] - 2024-08-23
+- Fix state management now we are using useFetch
+
 ## [Fixes] - 2024-08-22
 - Remove axios and use node-fetch
 
