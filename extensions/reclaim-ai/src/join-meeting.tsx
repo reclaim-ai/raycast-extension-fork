@@ -30,9 +30,7 @@ const joinMeeting = async (event: ApiResponseMoment["event"]) => {
     if (!id) return false;
 
     // try fetching original event
-    const [eventRequest, eventError] = await nodeFetchPromiseData<ApiResponseEvents[number]>(
-      fetcher(`/events/${id}`) //do i need apiUrl here?
-    );
+    const [eventRequest, eventError] = await nodeFetchPromiseData<ApiResponseEvents[number]>(fetcher(`/events/${id}`));
 
     if (eventError || !eventRequest) {
       console.error(eventError);

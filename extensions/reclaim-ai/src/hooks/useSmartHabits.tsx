@@ -11,7 +11,7 @@ const useSmartHabits = () => {
     data: smartHabits,
   } = useSyncCachedPromise<readonly SmartHabit[]>(
     "use-smart-habits",
-    async () => (await fetcher<readonly SmartHabit[]>("/smart-habits")),
+    async () => await fetcher<readonly SmartHabit[]>("/smart-habits"),
     {
       wrapError: (cause) => new Error("Error while fetching smart-habits", { cause }),
     }
