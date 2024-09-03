@@ -1,10 +1,13 @@
 # reclaim Changelog
 
 ## [Fixes] - 2024-08-23
-- Fix state management now we are using useFetch
+- Stopped rapid-fire calls to `GET:/api/smart-habits`
+    - New hook `useSyncCachedPromise`
+        - Only fires promise if previous fun is done
+        - Works when multiple components mount at the same time
 
-## [Fixes] - 2024-08-22
-- Remove axios and use node-fetch
+## [Fixes] - 2024-08-23
+- Fix state management now we are using useFetch
 
 ## [Fixes] - 2024-08-21
 - Add useCallbackSafeRef hook
