@@ -4,27 +4,24 @@ import { useSchedulingLinks } from "./hooks/useSchedulingLinks";
 import { useUser } from "./hooks/useUser";
 import { SchedulingLink } from "./types/scheduling-link";
 import { resolveTimePolicy } from "./utils/time-policy";
-import { nodeFetchPromiseData } from "./utils/fetcher";
 import useApi from "./hooks/useApi";
 
 const SLActions = ({ link }: { link: SchedulingLink }) => {
   const url = `https://app.reclaim.ai/m/${link.pageSlug}/${link.slug}`;
   const { currentUser } = useUser();
-  const { fetcher } = useApi();
+  const { fetchPromise } = useApi();
 
   const shareTimesEnabled = useMemo(() => {
     return !!currentUser?.features.schedulingLinks.shareTimesEnabled;
   }, [currentUser]);
 
   const createOneOffLink = async () => {
-    const [oneOff, error] = await nodeFetchPromiseData<SchedulingLink>(
-      fetcher(
-        "/scheduling-link/derivative",
-        {
-          method: "POST",
-        },
-        { parentId: link.id }
-      )
+    const [oneOff, error] = await fetchPromise<SchedulingLink>(
+      "/scheduling-link/derivative",
+      {
+        method: "POST",
+      },
+      { parentId: link.id }
     );
 
     if (!error && oneOff) {

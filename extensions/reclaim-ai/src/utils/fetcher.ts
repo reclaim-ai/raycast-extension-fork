@@ -2,17 +2,6 @@ import { getPreferenceValues } from "@raycast/api";
 import fetch, { FetchError, RequestInit } from "node-fetch";
 import { NativePreferences } from "../types/preferences";
 
-export async function nodeFetchPromiseData<T>(
-  promise: Promise<T>
-): Promise<[T, null] | [null, FetchError | undefined]> {
-  try {
-    const result: Awaited<T> = await promise;
-    return [result, null];
-  } catch (err) {
-    return [null, err as FetchError];
-  }
-}
-
 const { apiToken, apiUrl } = getPreferenceValues<NativePreferences>();
 
 export const fetcher = async <T>(url: string, options?: RequestInit, payload?: unknown): Promise<T> =>
@@ -28,3 +17,16 @@ export const fetcher = async <T>(url: string, options?: RequestInit, payload?: u
   })
     .then((r) => r.json())
     .catch((e) => console.error(e));
+
+export const fetchPromise = async <T>(
+  url: string,
+  options?: RequestInit,
+  payload?: unknown
+): Promise<[T, null] | [null, FetchError | undefined]> => {
+  try {
+    const result: Awaited<T> = await fetcher(url, options, payload);
+    return [result, null];
+  } catch (err) {
+    return [null, err as FetchError];
+  }
+};

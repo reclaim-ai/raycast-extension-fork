@@ -3,7 +3,6 @@ import { useFetch } from "@raycast/utils";
 import { useMemo } from "react";
 import { NativePreferences } from "../types/preferences";
 import { Task } from "../types/task";
-import { nodeFetchPromiseData } from "../utils/fetcher";
 import useApi from "./useApi";
 import { CreateTaskProps, PlannerActionIntermediateResult } from "./useTask.types";
 
@@ -38,7 +37,7 @@ export const useTasks = () => {
 };
 
 export const useTaskActions = () => {
-  const { fetcher } = useApi();
+  const { fetchPromise } = useApi();
 
   const createTask = async (task: CreateTaskProps) => {
     try {
@@ -57,14 +56,12 @@ export const useTaskActions = () => {
         onDeck: task.onDeck,
       };
 
-      const [createdTask, error] = await nodeFetchPromiseData<Task>(
-        fetcher(
-          "/tasks",
-          {
-            method: "POST",
-          },
-          data
-        )
+      const [createdTask, error] = await fetchPromise<Task>(
+        "/tasks",
+        {
+          method: "POST",
+        },
+        data
       );
       if (!createTask && error) throw error;
       return createdTask;
@@ -75,8 +72,9 @@ export const useTaskActions = () => {
 
   const startTask = async (id: string) => {
     try {
-      const [intermediateResult, error] = await nodeFetchPromiseData<PlannerActionIntermediateResult>(
-        fetcher(`/planner/start/task/${id}`, { method: "POST" })
+      const [intermediateResult, error] = await fetchPromise<PlannerActionIntermediateResult>(
+        `/planner/start/task/${id}`,
+        { method: "POST" }
       );
       if (!intermediateResult || error) throw error;
       await showHUD("Started Task");
@@ -88,8 +86,9 @@ export const useTaskActions = () => {
 
   const restartTask = async (id: string) => {
     try {
-      const [intermediateResult, error] = await nodeFetchPromiseData<PlannerActionIntermediateResult>(
-        fetcher(`/planner/restart/task/${id}`, { method: "POST" })
+      const [intermediateResult, error] = await fetchPromise<PlannerActionIntermediateResult>(
+        `/planner/restart/task/${id}`,
+        { method: "POST" }
       );
       if (!intermediateResult || error) throw error;
       await showHUD("Restarted Task");
@@ -101,8 +100,9 @@ export const useTaskActions = () => {
 
   const stopTask = async (id: string) => {
     try {
-      const [intermediateResult, error] = await nodeFetchPromiseData<PlannerActionIntermediateResult>(
-        fetcher(`/planner/stop/task/${id}`, { method: "POST" })
+      const [intermediateResult, error] = await fetchPromise<PlannerActionIntermediateResult>(
+        `/planner/stop/task/${id}`,
+        { method: "POST" }
       );
       if (!intermediateResult || error) throw error;
       await showHUD("Stopped Task");
@@ -115,10 +115,11 @@ export const useTaskActions = () => {
   // Add time
   const addTime = async (task: Task, time: number) => {
     try {
-      const [intermediateResult, error] = await nodeFetchPromiseData<PlannerActionIntermediateResult>(
-        fetcher(`/planner/add-time/task/${task.id}?minutes=${time}`, {
+      const [intermediateResult, error] = await fetchPromise<PlannerActionIntermediateResult>(
+        `/planner/add-time/task/${task.id}?minutes=${time}`,
+        {
           method: "POST",
-        })
+        }
       );
       if (!intermediateResult || error) throw error;
       await showHUD("Added time to Task");
@@ -131,14 +132,12 @@ export const useTaskActions = () => {
   // Update task
   const updateTask = async (task: Partial<Task>, payload: Partial<Task>) => {
     try {
-      const [updatedTask, error] = await nodeFetchPromiseData<Task>(
-        fetcher(
-          `/tasks/${task.id}`,
-          {
-            method: "PATCH",
-          },
-          payload
-        )
+      const [updatedTask, error] = await fetchPromise<Task>(
+        `/tasks/${task.id}`,
+        {
+          method: "PATCH",
+        },
+        payload
       );
       if (!updatedTask || error) throw error;
       return updatedTask;
@@ -151,10 +150,11 @@ export const useTaskActions = () => {
   // Set task to done
   const doneTask = async (task: Task) => {
     try {
-      const [intermediateResult, error] = await nodeFetchPromiseData<PlannerActionIntermediateResult>(
-        fetcher(`/planner/done/task/${task.id}`, {
+      const [intermediateResult, error] = await fetchPromise<PlannerActionIntermediateResult>(
+        `/planner/done/task/${task.id}`,
+        {
           method: "POST",
-        })
+        }
       );
       if (!intermediateResult || error) throw error;
       await showHUD("Marked Task as complete");
@@ -167,10 +167,11 @@ export const useTaskActions = () => {
   // Set task to incomplete
   const incompleteTask = async (task: Task) => {
     try {
-      const [intermediateResult, error] = await nodeFetchPromiseData<PlannerActionIntermediateResult>(
-        fetcher(`/planner/unarchive/task/${task.id}`, {
+      const [intermediateResult, error] = await fetchPromise<PlannerActionIntermediateResult>(
+        `/planner/unarchive/task/${task.id}`,
+        {
           method: "POST",
-        })
+        }
       );
       if (!intermediateResult || error) throw error;
       await showHUD("Marked Task as incomplete");
@@ -183,15 +184,13 @@ export const useTaskActions = () => {
   // Snooze Task
   const rescheduleTask = async (taskId: string, rescheduleCommand: string, relativeFrom?: string) => {
     try {
-      const [intermediateResult, error] = await nodeFetchPromiseData<PlannerActionIntermediateResult>(
-        fetcher(
-          `/planner/task/${taskId}/snooze?snoozeOption=${rescheduleCommand}&relativeFrom=${
-            relativeFrom ? relativeFrom : null
-          }`,
-          {
-            method: "POST",
-          }
-        )
+      const [intermediateResult, error] = await fetchPromise<PlannerActionIntermediateResult>(
+        `/planner/task/${taskId}/snooze?snoozeOption=${rescheduleCommand}&relativeFrom=${
+          relativeFrom ? relativeFrom : null
+        }`,
+        {
+          method: "POST",
+        }
       );
       if (!intermediateResult || error) throw error;
       await showHUD("Rescheduled Task");

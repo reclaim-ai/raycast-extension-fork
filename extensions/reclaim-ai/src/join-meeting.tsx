@@ -2,7 +2,7 @@ import { closeMainWindow, open, showHUD } from "@raycast/api";
 import useApi from "./hooks/useApi";
 import { ApiResponseEvents, ApiResponseMoment } from "./hooks/useEvent.types";
 import { getOriginalEventIDFromSyncEvent } from "./utils/events";
-import { nodeFetchPromiseData } from "./utils/fetcher";
+
 /**
  * This function is used to join a meeting.
  * If it succeeds, it returns true.
@@ -16,7 +16,7 @@ import { nodeFetchPromiseData } from "./utils/fetcher";
  * @returns {Promise<boolean>} - Returns a promise that resolves to a boolean indicating whether the meeting was joined successfully.
  */
 const joinMeeting = async (event: ApiResponseMoment["event"]) => {
-  const { fetcher } = useApi();
+  const { fetchPromise } = useApi();
 
   if (!event) return false;
 
@@ -30,7 +30,7 @@ const joinMeeting = async (event: ApiResponseMoment["event"]) => {
     if (!id) return false;
 
     // try fetching original event
-    const [eventRequest, eventError] = await nodeFetchPromiseData<ApiResponseEvents[number]>(fetcher(`/events/${id}`));
+    const [eventRequest, eventError] = await fetchPromise<ApiResponseEvents[number]>(`/events/${id}`);
 
     if (eventError || !eventRequest) {
       console.error(eventError);
@@ -46,12 +46,12 @@ const joinMeeting = async (event: ApiResponseMoment["event"]) => {
 };
 
 export default async function Command() {
-  const { fetcher } = useApi();
+  const { fetchPromise } = useApi();
 
   await closeMainWindow();
   await showHUD("Joining meeting...");
 
-  const [momentRequest, momentError] = await nodeFetchPromiseData<ApiResponseMoment>(fetcher(`/moment/next`));
+  const [momentRequest, momentError] = await fetchPromise<ApiResponseMoment>(`/moment/next`);
 
   if (momentError || !momentRequest) {
     console.error(momentError);

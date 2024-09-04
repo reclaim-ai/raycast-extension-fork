@@ -14,7 +14,6 @@ import { ApiResponseEvents, EventActions } from "./useEvent.types";
 import { useSmartHabits } from "./useSmartHabits";
 import { useTaskActions } from "./useTask";
 import { useUser } from "./useUser";
-import { nodeFetchPromiseData } from "../utils/fetcher";
 
 export const useEvents = ({ start, end }: { start: Date; end: Date }) => {
   const { apiUrl, apiToken } = getPreferenceValues<NativePreferences>();
@@ -55,7 +54,7 @@ export const useEvents = ({ start, end }: { start: Date; end: Date }) => {
 };
 
 export const useEventActions = () => {
-  const { fetcher } = useApi();
+  const { fetchPromise } = useApi();
   const { currentUser } = useUser();
   const { startTask, restartTask, stopTask } = useTaskActions();
   const { apiUrl } = getPreferenceValues<NativePreferences>();
@@ -80,7 +79,7 @@ export const useEventActions = () => {
   const handleStartHabit = async (id: string, title: string) => {
     try {
       await showHUD("Started Habit: " + stripPlannerEmojis(title));
-      const [habit, error] = await nodeFetchPromiseData(fetcher(`/planner/start/habit/${id}`, { method: "POST" }));
+      const [habit, error] = await fetchPromise(`/planner/start/habit/${id}`, { method: "POST" });
       if (!habit || error) throw error;
       return habit;
     } catch (error) {
@@ -92,7 +91,7 @@ export const useEventActions = () => {
   const handleRestartHabit = async (id: string, title: string) => {
     try {
       await showHUD("Restarted Habit: " + stripPlannerEmojis(title));
-      const [habit, error] = await nodeFetchPromiseData(fetcher(`/planner/restart/habit/${id}`, { method: "POST" }));
+      const [habit, error] = await fetchPromise(`/planner/restart/habit/${id}`, { method: "POST" });
       if (!habit || error) throw error;
       return habit;
     } catch (error) {
@@ -104,7 +103,7 @@ export const useEventActions = () => {
   const handleStopHabit = async (id: string, title: string) => {
     try {
       await showHUD("Stopped Habit: " + stripPlannerEmojis(title));
-      const [habit, error] = await nodeFetchPromiseData(fetcher(`/planner/stop/habit/${id}`, { method: "POST" }));
+      const [habit, error] = await fetchPromise(`/planner/stop/habit/${id}`, { method: "POST" });
       if (!habit || error) throw error;
 
       return habit;
@@ -117,9 +116,7 @@ export const useEventActions = () => {
   const handleStartOrRestartSmartHabit = async (lineageId: string, title: string) => {
     try {
       await showHUD("Started Habit: " + stripPlannerEmojis(title));
-      const [habit, error] = await nodeFetchPromiseData(
-        fetcher(`/smart-habits/planner/${lineageId}/start`, { method: "POST" })
-      );
+      const [habit, error] = await fetchPromise(`/smart-habits/planner/${lineageId}/start`, { method: "POST" });
       if (!habit || error) throw error;
 
       return habit;
@@ -132,9 +129,7 @@ export const useEventActions = () => {
   const handleStopSmartHabit = async (lineageId: string, title: string) => {
     try {
       await showHUD("Stopped Habit: " + stripPlannerEmojis(title));
-      const [habit, error] = await nodeFetchPromiseData(
-        fetcher(`/smart-habits/planner/${lineageId}/stop`, { method: "POST" })
-      );
+      const [habit, error] = await fetchPromise(`/smart-habits/planner/${lineageId}/stop`, { method: "POST" });
       if (!habit || error) throw error;
 
       return habit;
