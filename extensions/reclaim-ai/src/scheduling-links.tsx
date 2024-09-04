@@ -18,12 +18,13 @@ const SLActions = ({ link }: { link: SchedulingLink }) => {
 
   const createOneOffLink = async () => {
     const [oneOff, error] = await nodeFetchPromiseData<SchedulingLink>(
-      fetcher("/scheduling-link/derivative", {
-        method: "POST",
-        body: JSON.stringify({
-          parentId: link.id,
-        }),
-      })
+      fetcher(
+        "/scheduling-link/derivative",
+        {
+          method: "POST",
+        },
+        { parentId: link.id }
+      )
     );
 
     if (!error && oneOff) {

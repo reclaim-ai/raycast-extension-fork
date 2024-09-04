@@ -58,10 +58,13 @@ export const useTaskActions = () => {
       };
 
       const [createdTask, error] = await nodeFetchPromiseData<Task>(
-        fetcher("/tasks", {
-          method: "POST",
-          body: JSON.stringify(data),
-        })
+        fetcher(
+          "/tasks",
+          {
+            method: "POST",
+          },
+          data
+        )
       );
       if (!createTask && error) throw error;
       return createdTask;
@@ -129,10 +132,13 @@ export const useTaskActions = () => {
   const updateTask = async (task: Partial<Task>, payload: Partial<Task>) => {
     try {
       const [updatedTask, error] = await nodeFetchPromiseData<Task>(
-        fetcher(`/tasks/${task.id}`, {
-          method: "PATCH",
-          body: JSON.stringify(payload),
-        })
+        fetcher(
+          `/tasks/${task.id}`,
+          {
+            method: "PATCH",
+          },
+          payload
+        )
       );
       if (!updatedTask || error) throw error;
       return updatedTask;

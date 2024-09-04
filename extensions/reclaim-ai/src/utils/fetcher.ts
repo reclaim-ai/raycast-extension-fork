@@ -15,9 +15,10 @@ export async function nodeFetchPromiseData<T>(
 
 const { apiToken, apiUrl } = getPreferenceValues<NativePreferences>();
 
-export const fetcher = async <T>(url: string, options?: RequestInit): Promise<T> =>
+export const fetcher = async <T>(url: string, options?: RequestInit, payload?: unknown): Promise<T> =>
   fetch(`${apiUrl}${url}`, {
     ...options,
+    body: payload ? JSON.stringify(payload) : undefined,
     headers: {
       Authorization: `Bearer ${apiToken}`,
       "Content-Type": "application/json",

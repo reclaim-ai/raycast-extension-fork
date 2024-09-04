@@ -17,10 +17,14 @@ const useInterpreter = () => {
       };
 
       const [response, error] = await nodeFetchPromiseData<ApiResponseInterpreter<T>>(
-        fetcher("/interpreter/message", {
-          method: "POST",
-          body: JSON.stringify(data),
-        })
+        fetcher(
+          "/interpreter/message",
+          {
+            method: "POST",
+            // body: JSON.stringify(data),
+          },
+          data
+        )
       );
       if (!response || error) throw error;
 
