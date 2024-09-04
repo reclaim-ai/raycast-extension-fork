@@ -1,10 +1,12 @@
 import { useMemo } from "react";
 import { SmartHabit } from "../types/smart-series";
-import { fetcher } from "../utils/fetcher";
 import { normalize } from "../utils/objects";
 import { useSyncCachedPromise } from "./useSyncCachedPromise";
+import useApi from "./useApi";
 
 const useSmartHabits = () => {
+  const { fetcher } = useApi();
+
   const {
     error,
     isLoading,
