@@ -41,7 +41,6 @@ export const useTaskActions = () => {
   const { fetchPromise } = useApi();
 
   const executeTaskAction = async <T,>(url: string, options?: RequestInit, payload?: unknown): Promise<T> => {
-    // eslint-disable-next-line prefer-const
     const [response, error] = await fetchPromise<T>(url, options, payload);
     if (error) throw error;
     if (!response) throw new Error("No response");
@@ -65,10 +64,6 @@ export const useTaskActions = () => {
     };
 
     return await executeTaskAction<Task>("/tasks", { method: "POST" }, data);
-
-    // const [createdTask, error] = await fetchPromise<Task>("/tasks", { method: "POST" }, data);
-    // if (!createdTask && error) throw error;
-    // return createdTask;
   };
 
   const startTask = async (id: string) => {
@@ -77,13 +72,6 @@ export const useTaskActions = () => {
     });
     await showHUD("Started Task");
     return response;
-
-    // const [intermediateResult, error] = await fetchPromise<PlannerActionIntermediateResult>(
-    //   `/planner/start/task/${id}`,
-    //   { method: "POST" }
-    // );
-    // if (!intermediateResult || error) throw error;
-    // return intermediateResult;
   };
 
   const restartTask = async (id: string) => {
@@ -92,13 +80,6 @@ export const useTaskActions = () => {
     });
     await showHUD("Restarted Task");
     return response;
-
-    // const [intermediateResult, error] = await fetchPromise<PlannerActionIntermediateResult>(
-    //   `/planner/restart/task/${id}`,
-    //   { method: "POST" }
-    // );
-    // if (!intermediateResult || error) throw error;
-    // return intermediateResult;
   };
 
   const stopTask = async (id: string) => {
@@ -107,13 +88,6 @@ export const useTaskActions = () => {
     });
     await showHUD("Stopped Task");
     return response;
-
-    // const [intermediateResult, error] = await fetchPromise<PlannerActionIntermediateResult>(
-    //   `/planner/stop/task/${id}`,
-    //   { method: "POST" }
-    // );
-    // if (!intermediateResult || error) throw error;
-    // return intermediateResult;
   };
 
   // Add time
@@ -122,23 +96,11 @@ export const useTaskActions = () => {
       `/planner/add-time/task/${task.id}?minutes=${time}`,
       { method: "POST" }
     );
-
-    // const [intermediateResult, error] = await fetchPromise<PlannerActionIntermediateResult>(
-    //   `/planner/add-time/task/${task.id}?minutes=${time}`,
-    //   { method: "POST" }
-    // );
-    // if (!intermediateResult || error) throw error;
-    // await showHUD("Added time to Task");
-    // return intermediateResult;
   };
 
   // Update task
   const updateTask = async (task: Partial<Task>, payload: Partial<Task>) => {
     return await executeTaskAction<Task>(`/tasks/${task.id}`, { method: "PATCH" }, payload);
-
-    // const [updatedTask, error] = await fetchPromise<Task>(`/tasks/${task.id}`, { method: "PATCH" }, payload);
-    // if (!updatedTask || error) throw error;
-    // return updatedTask;
   };
 
   // Set task to done
@@ -146,14 +108,6 @@ export const useTaskActions = () => {
     return await executeTaskAction<PlannerActionIntermediateResult>(`/planner/done/task/${task.id}`, {
       method: "POST",
     });
-
-    // const [intermediateResult, error] = await fetchPromise<PlannerActionIntermediateResult>(
-    //   `/planner/done/task/${task.id}`,
-    //   { method: "POST" }
-    // );
-    // if (!intermediateResult || error) throw error;
-    // await showHUD("Marked Task as complete");
-    // return intermediateResult;
   };
 
   // Set task to incomplete
@@ -161,14 +115,6 @@ export const useTaskActions = () => {
     return await executeTaskAction<PlannerActionIntermediateResult>(`/planner/unarchive/task/${task.id}`, {
       method: "POST",
     });
-
-    // const [intermediateResult, error] = await fetchPromise<PlannerActionIntermediateResult>(
-    //   `/planner/unarchive/task/${task.id}`,
-    //   { method: "POST" }
-    // );
-    // if (!intermediateResult || error) throw error;
-    // await showHUD("Marked Task as incomplete");
-    // return intermediateResult;
   };
 
   // Snooze Task
@@ -179,16 +125,6 @@ export const useTaskActions = () => {
       }`,
       { method: "POST" }
     );
-
-    // const [intermediateResult, error] = await fetchPromise<PlannerActionIntermediateResult>(
-    //   `/planner/task/${taskId}/snooze?snoozeOption=${rescheduleCommand}&relativeFrom=${
-    //     relativeFrom ? relativeFrom : null
-    //   }`,
-    //   { method: "POST" }
-    // );
-    // if (!intermediateResult || error) throw error;
-    // await showHUD("Rescheduled Task");
-    // return intermediateResult;
   };
 
   return {
