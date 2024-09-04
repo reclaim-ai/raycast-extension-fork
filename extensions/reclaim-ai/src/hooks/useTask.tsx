@@ -5,6 +5,7 @@ import { NativePreferences } from "../types/preferences";
 import { Task } from "../types/task";
 import useApi from "./useApi";
 import { CreateTaskProps, PlannerActionIntermediateResult } from "./useTask.types";
+import { RequestInit } from "node-fetch";
 
 export const useTasks = () => {
   const { apiUrl, apiToken } = getPreferenceValues<NativePreferences>();
@@ -39,165 +40,155 @@ export const useTasks = () => {
 export const useTaskActions = () => {
   const { fetchPromise } = useApi();
 
-  const createTask = async (task: CreateTaskProps) => {
-    try {
-      const data = {
-        eventCategory: "WORK",
-        timeSchemeId: task.timePolicy,
-        title: task.title,
-        timeChunksRequired: task.timeNeeded,
-        snoozeUntil: task.snoozeUntil,
-        due: task.due,
-        minChunkSize: task.durationMin,
-        maxChunkSize: task.durationMax,
-        notes: task.notes,
-        alwaysPrivate: task.alwaysPrivate,
-        priority: task.priority,
-        onDeck: task.onDeck,
-      };
+  const executeTaskAction = async <T,>(url: string, options?: RequestInit, payload?: unknown): Promise<T> => {
+    // eslint-disable-next-line prefer-const
+    const [response, error] = await fetchPromise<T>(url, options, payload);
+    if (error) throw error;
+    if (!response) throw new Error("No response");
+    return response;
+  };
 
-      const [createdTask, error] = await fetchPromise<Task>(
-        "/tasks",
-        {
-          method: "POST",
-        },
-        data
-      );
-      if (!createTask && error) throw error;
-      return createdTask;
-    } catch (error) {
-      console.error("Error while creating task", error);
-    }
+  const createTask = async (task: CreateTaskProps) => {
+    const data = {
+      eventCategory: "WORK",
+      timeSchemeId: task.timePolicy,
+      title: task.title,
+      timeChunksRequired: task.timeNeeded,
+      snoozeUntil: task.snoozeUntil,
+      due: task.due,
+      minChunkSize: task.durationMin,
+      maxChunkSize: task.durationMax,
+      notes: task.notes,
+      alwaysPrivate: task.alwaysPrivate,
+      priority: task.priority,
+      onDeck: task.onDeck,
+    };
+
+    return await executeTaskAction<Task>("/tasks", { method: "POST" }, data);
+
+    // const [createdTask, error] = await fetchPromise<Task>("/tasks", { method: "POST" }, data);
+    // if (!createdTask && error) throw error;
+    // return createdTask;
   };
 
   const startTask = async (id: string) => {
-    try {
-      const [intermediateResult, error] = await fetchPromise<PlannerActionIntermediateResult>(
-        `/planner/start/task/${id}`,
-        { method: "POST" }
-      );
-      if (!intermediateResult || error) throw error;
-      await showHUD("Started Task");
-      return intermediateResult;
-    } catch (error) {
-      console.error("Error while starting task", error);
-    }
+    const response = await executeTaskAction<PlannerActionIntermediateResult>(`/planner/start/task/${id}`, {
+      method: "POST",
+    });
+    await showHUD("Started Task");
+    return response;
+
+    // const [intermediateResult, error] = await fetchPromise<PlannerActionIntermediateResult>(
+    //   `/planner/start/task/${id}`,
+    //   { method: "POST" }
+    // );
+    // if (!intermediateResult || error) throw error;
+    // return intermediateResult;
   };
 
   const restartTask = async (id: string) => {
-    try {
-      const [intermediateResult, error] = await fetchPromise<PlannerActionIntermediateResult>(
-        `/planner/restart/task/${id}`,
-        { method: "POST" }
-      );
-      if (!intermediateResult || error) throw error;
-      await showHUD("Restarted Task");
-      return intermediateResult;
-    } catch (error) {
-      console.error("Error while restarting task", error);
-    }
+    const response = await executeTaskAction<PlannerActionIntermediateResult>(`/planner/restart/task/${id}`, {
+      method: "POST",
+    });
+    await showHUD("Restarted Task");
+    return response;
+
+    // const [intermediateResult, error] = await fetchPromise<PlannerActionIntermediateResult>(
+    //   `/planner/restart/task/${id}`,
+    //   { method: "POST" }
+    // );
+    // if (!intermediateResult || error) throw error;
+    // return intermediateResult;
   };
 
   const stopTask = async (id: string) => {
-    try {
-      const [intermediateResult, error] = await fetchPromise<PlannerActionIntermediateResult>(
-        `/planner/stop/task/${id}`,
-        { method: "POST" }
-      );
-      if (!intermediateResult || error) throw error;
-      await showHUD("Stopped Task");
-      return intermediateResult;
-    } catch (error) {
-      console.error("Error while stopping task", error);
-    }
+    const response = await executeTaskAction<PlannerActionIntermediateResult>(`/planner/stop/task/${id}`, {
+      method: "POST",
+    });
+    await showHUD("Stopped Task");
+    return response;
+
+    // const [intermediateResult, error] = await fetchPromise<PlannerActionIntermediateResult>(
+    //   `/planner/stop/task/${id}`,
+    //   { method: "POST" }
+    // );
+    // if (!intermediateResult || error) throw error;
+    // return intermediateResult;
   };
 
   // Add time
   const addTime = async (task: Task, time: number) => {
-    try {
-      const [intermediateResult, error] = await fetchPromise<PlannerActionIntermediateResult>(
-        `/planner/add-time/task/${task.id}?minutes=${time}`,
-        {
-          method: "POST",
-        }
-      );
-      if (!intermediateResult || error) throw error;
-      await showHUD("Added time to Task");
-      return intermediateResult;
-    } catch (error) {
-      console.error("Error while adding time", error);
-    }
+    return await executeTaskAction<PlannerActionIntermediateResult>(
+      `/planner/add-time/task/${task.id}?minutes=${time}`,
+      { method: "POST" }
+    );
+
+    // const [intermediateResult, error] = await fetchPromise<PlannerActionIntermediateResult>(
+    //   `/planner/add-time/task/${task.id}?minutes=${time}`,
+    //   { method: "POST" }
+    // );
+    // if (!intermediateResult || error) throw error;
+    // await showHUD("Added time to Task");
+    // return intermediateResult;
   };
 
   // Update task
   const updateTask = async (task: Partial<Task>, payload: Partial<Task>) => {
-    try {
-      const [updatedTask, error] = await fetchPromise<Task>(
-        `/tasks/${task.id}`,
-        {
-          method: "PATCH",
-        },
-        payload
-      );
-      if (!updatedTask || error) throw error;
-      return updatedTask;
-    } catch (error) {
-      console.error("Error while updating task", error);
-      throw error;
-    }
+    return await executeTaskAction<Task>(`/tasks/${task.id}`, { method: "PATCH" }, payload);
+
+    // const [updatedTask, error] = await fetchPromise<Task>(`/tasks/${task.id}`, { method: "PATCH" }, payload);
+    // if (!updatedTask || error) throw error;
+    // return updatedTask;
   };
 
   // Set task to done
   const doneTask = async (task: Task) => {
-    try {
-      const [intermediateResult, error] = await fetchPromise<PlannerActionIntermediateResult>(
-        `/planner/done/task/${task.id}`,
-        {
-          method: "POST",
-        }
-      );
-      if (!intermediateResult || error) throw error;
-      await showHUD("Marked Task as complete");
-      return intermediateResult;
-    } catch (error) {
-      console.error("Error while updating task", error);
-    }
+    return await executeTaskAction<PlannerActionIntermediateResult>(`/planner/done/task/${task.id}`, {
+      method: "POST",
+    });
+
+    // const [intermediateResult, error] = await fetchPromise<PlannerActionIntermediateResult>(
+    //   `/planner/done/task/${task.id}`,
+    //   { method: "POST" }
+    // );
+    // if (!intermediateResult || error) throw error;
+    // await showHUD("Marked Task as complete");
+    // return intermediateResult;
   };
 
   // Set task to incomplete
   const incompleteTask = async (task: Task) => {
-    try {
-      const [intermediateResult, error] = await fetchPromise<PlannerActionIntermediateResult>(
-        `/planner/unarchive/task/${task.id}`,
-        {
-          method: "POST",
-        }
-      );
-      if (!intermediateResult || error) throw error;
-      await showHUD("Marked Task as incomplete");
-      return intermediateResult;
-    } catch (error) {
-      console.error("Error while updating task", error);
-    }
+    return await executeTaskAction<PlannerActionIntermediateResult>(`/planner/unarchive/task/${task.id}`, {
+      method: "POST",
+    });
+
+    // const [intermediateResult, error] = await fetchPromise<PlannerActionIntermediateResult>(
+    //   `/planner/unarchive/task/${task.id}`,
+    //   { method: "POST" }
+    // );
+    // if (!intermediateResult || error) throw error;
+    // await showHUD("Marked Task as incomplete");
+    // return intermediateResult;
   };
 
   // Snooze Task
   const rescheduleTask = async (taskId: string, rescheduleCommand: string, relativeFrom?: string) => {
-    try {
-      const [intermediateResult, error] = await fetchPromise<PlannerActionIntermediateResult>(
-        `/planner/task/${taskId}/snooze?snoozeOption=${rescheduleCommand}&relativeFrom=${
-          relativeFrom ? relativeFrom : null
-        }`,
-        {
-          method: "POST",
-        }
-      );
-      if (!intermediateResult || error) throw error;
-      await showHUD("Rescheduled Task");
-      return intermediateResult;
-    } catch (error) {
-      console.error("Error while rescheduling event", error);
-    }
+    return await executeTaskAction<PlannerActionIntermediateResult>(
+      `/planner/task/${taskId}/snooze?snoozeOption=${rescheduleCommand}&relativeFrom=${
+        relativeFrom ? relativeFrom : null
+      }`,
+      { method: "POST" }
+    );
+
+    // const [intermediateResult, error] = await fetchPromise<PlannerActionIntermediateResult>(
+    //   `/planner/task/${taskId}/snooze?snoozeOption=${rescheduleCommand}&relativeFrom=${
+    //     relativeFrom ? relativeFrom : null
+    //   }`,
+    //   { method: "POST" }
+    // );
+    // if (!intermediateResult || error) throw error;
+    // await showHUD("Rescheduled Task");
+    // return intermediateResult;
   };
 
   return {
