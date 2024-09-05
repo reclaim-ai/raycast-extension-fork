@@ -7,8 +7,6 @@ import { fetcher, fetchPromise } from "../utils/fetcher";
 const useApi = () => {
   const { apiUrl, apiToken } = getPreferenceValues<NativePreferences>();
 
-  // const { push } = useNavigation();
-
   if (!apiToken) {
     showToast({
       style: Toast.Style.Failure,
