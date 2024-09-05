@@ -1,4 +1,5 @@
 import { getPreferenceValues, showToast, Toast } from "@raycast/api";
+// eslint-disable-next-line no-restricted-imports
 import { useFetch } from "@raycast/utils";
 import { useMemo } from "react";
 import { NativePreferences } from "../types/preferences";
