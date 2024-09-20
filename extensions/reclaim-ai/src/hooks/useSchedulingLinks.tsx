@@ -2,21 +2,20 @@ import { open, showToast, Toast } from "@raycast/api";
 import { SchedulingLink } from "../types/scheduling-link";
 import useApi from "./useApi";
 import { ApiSchedulingLink, ApiSchedulingLinkGroups } from "./useSchedulingLinks.types";
+import { fetchPromise } from "../utils/fetcher";
 
 export const useSchedulingLinks = () => {
-  const { useFetchRai } = useApi();
-
   const {
     data: schedulingLinks,
     error: schedulingLinksError,
     isLoading: schedulingLinksIsLoading,
-  } = useFetchRai<ApiSchedulingLink>("/scheduling-link");
+  } = useApi<ApiSchedulingLink>("/scheduling-link");
 
   const {
     data: schedulingLinksGroups,
     error: schedulingLinksGroupsError,
     isLoading: schedulingLinksGroupsIsLoading,
-  } = useFetchRai<ApiSchedulingLinkGroups>("/scheduling-link/group");
+  } = useApi<ApiSchedulingLinkGroups>("/scheduling-link/group");
 
   if (schedulingLinksError) console.error("Error while fetching Scheduling Links", schedulingLinksError);
   if (schedulingLinksGroupsError)
@@ -34,8 +33,6 @@ export const useSchedulingLinks = () => {
 
 export const useSchedulingLinkActions = (link: SchedulingLink) => {
   const createOneOffLink = async () => {
-    const { fetchPromise } = useApi();
-
     const [oneOff, error] = await fetchPromise<SchedulingLink>(
       "/scheduling-link/derivative",
       { method: "POST" },

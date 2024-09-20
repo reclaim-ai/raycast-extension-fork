@@ -3,11 +3,10 @@ import { RequestInit } from "node-fetch";
 import { Task } from "../types/task";
 import useApi from "./useApi";
 import { CreateTaskProps, PlannerActionIntermediateResult } from "./useTask.types";
+import { fetchPromise } from "../utils/fetcher";
 
 export const useTasks = () => {
-  const { useFetchRai } = useApi();
-
-  const { data: tasks, error, isLoading } = useFetchRai<Task[]>("/tasks?instances=true");
+  const { data: tasks, error, isLoading } = useApi<Task[]>("/tasks?instances=true");
 
   if (error) console.error("Error while fetching Tasks", error);
 
@@ -19,8 +18,6 @@ export const useTasks = () => {
 };
 
 export const useTaskActions = () => {
-  const { fetchPromise } = useApi();
-
   const executeTaskAction = async <T,>(url: string, options?: RequestInit, payload?: unknown): Promise<T> => {
     const [response, error] = await fetchPromise<T>(url, options, payload);
     if (error) throw error;

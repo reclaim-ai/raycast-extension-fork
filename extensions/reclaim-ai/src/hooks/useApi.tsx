@@ -3,9 +3,8 @@ import { getPreferenceValues, showToast, Toast } from "@raycast/api";
 import { useFetch } from "@raycast/utils";
 import { useMemo } from "react";
 import { NativePreferences } from "../types/preferences";
-import { fetcher, fetchPromise } from "../utils/fetcher";
 
-const useApi = () => {
+const useApi = <T,>(url: string) => {
   const { apiUrl, apiToken } = getPreferenceValues<NativePreferences>();
 
   if (!apiToken) {
@@ -25,9 +24,7 @@ const useApi = () => {
     [apiToken]
   );
 
-  const useFetchRai = <T,>(url: string) => useFetch<T>(`${apiUrl}${url}`, { headers, keepPreviousData: true });
-
-  return { fetcher, fetchPromise, useFetchRai };
+  return useFetch<T>(`${apiUrl}${url}`, { headers, keepPreviousData: true });
 };
 
 export default useApi;
