@@ -9,7 +9,7 @@
           {
             "name": "@raycast/utils",
             "importNames": ["useFetch"],
-            "message": "Use useFetchRai in useApi instead."
+            "message": "Use useApi instead."
           }
         ]
       }
