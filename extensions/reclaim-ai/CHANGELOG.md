@@ -1,6 +1,10 @@
 # reclaim Changelog
 
 ## [Fixes] - 2024-09-05
+- Only use moment cache on first load
+- Refresh moment every 5 minutes
+
+## [Fixes] - 2024-09-05
 - Route useFetch through useApi
 
 ## [Fixes] - 2024-09-04
