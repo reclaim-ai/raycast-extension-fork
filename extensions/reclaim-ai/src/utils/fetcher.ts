@@ -1,20 +1,20 @@
-import { getPreferenceValues, showToast, Toast } from "@raycast/api";
+import { getPreferenceValues } from "@raycast/api";
 import fetch, { FetchError, RequestInit } from "node-fetch";
 import { NativePreferences } from "../types/preferences";
+import { getRequestHeaders } from "./requests";
 import { errorCoverage, upgradeAndCaptureError } from "./sentry";
 
-const { apiToken, apiUrl } = getPreferenceValues<NativePreferences>();
+const { apiUrl } = getPreferenceValues<NativePreferences>();
 
-export abstract class FetcherError extends Error {}
+export abstract class FetcherError extends Error { }
 
-export abstract class FetcherRequestError extends FetcherError {}
-export class FetcherRequestPrepError extends FetcherRequestError {}
-export class FetcherRequestMissingApiKeyError extends FetcherRequestError {}
-export class FetcherRequestFailedError extends FetcherRequestError {}
-export class FetcherRequestInvalidJSONError extends FetcherRequestError {}
+export abstract class FetcherRequestError extends FetcherError { }
+export class FetcherRequestPrepError extends FetcherRequestError { }
+export class FetcherRequestFailedError extends FetcherRequestError { }
+export class FetcherRequestInvalidJSONError extends FetcherRequestError { }
 
-export abstract class FetcherResponseError extends FetcherError {}
-export class FetcherResponseInvalidJSONError extends FetcherRequestError {}
+export abstract class FetcherResponseError extends FetcherError { }
+export class FetcherResponseInvalidJSONError extends FetcherRequestError { }
 
 export type FetcherOptions = {
   init?: RequestInit;
@@ -26,16 +26,6 @@ export const fetcher = async <T>(url: string, options: FetcherOptions = {}): Pro
 
   return errorCoverage(
     () => {
-      if (!apiToken) {
-        showToast({
-          style: Toast.Style.Failure,
-          title: "Something is wrong with your API Token key. Check your Raycast config and set up a new token.",
-          message: "Something wrong with your API Token key. Check your Raycast config and set up a new token.",
-        });
-
-        throw new FetcherRequestMissingApiKeyError("No API key found in configuration");
-      }
-
       let body: string | undefined;
       try {
         if (payload) body = JSON.stringify(payload);
@@ -47,9 +37,7 @@ export const fetcher = async <T>(url: string, options: FetcherOptions = {}): Pro
         ...init,
         body,
         headers: {
-          Authorization: `Bearer ${apiToken}`,
-          "Content-Type": "application/json",
-          Accept: "application/json",
+          ...getRequestHeaders(),
           ...init?.headers,
         },
       })

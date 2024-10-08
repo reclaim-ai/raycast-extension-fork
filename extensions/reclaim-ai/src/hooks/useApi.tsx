@@ -1,14 +1,12 @@
-import { getPreferenceValues, showToast, Toast } from "@raycast/api";
+import { getPreferenceValues } from "@raycast/api";
 // eslint-disable-next-line no-restricted-imports
 import { useFetch } from "@raycast/utils";
-import { useMemo } from "react";
 import { NativePreferences } from "../types/preferences";
 import { Hint, upgradeAndCaptureError, useCaptureException } from "../utils/sentry";
+import { getRequestHeaders } from "../utils/requests";
 
 export class UseApiError extends Error {}
 export class UseApiResponseError extends UseApiError {}
-export abstract class UseApiRequestError extends UseApiError {}
-export class UseApiRequestMissingApiKeyError extends UseApiRequestError {}
 
 const useApi = <T,>(url: string) => {
   const hint: Hint = { data: { request: `${url}` } };
@@ -16,31 +14,14 @@ const useApi = <T,>(url: string) => {
   let error: UseApiError | undefined;
 
   try {
-    const { apiUrl, apiToken } = getPreferenceValues<NativePreferences>();
+    const { apiUrl } = getPreferenceValues<NativePreferences>();
 
-    if (!apiToken) {
-      showToast({
-        style: Toast.Style.Failure,
-        title: "Something is wrong with your API Token key. Check your Raycast config and set up a new token.",
-        message: "Something wrong with your API Token key. Check your Raycast config and set up a new token.",
-      });
-
-      error = new UseApiRequestMissingApiKeyError("No API key found in configuration");
-    }
-
-    const headers = useMemo(
-      () => ({
-        Authorization: `Bearer ${apiToken}`,
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      }),
-      [apiToken]
-    );
+    
 
     const result = {
       error,
       ...useFetch<T>(`${apiUrl}${url}`, {
-        headers,
+        headers: getRequestHeaders(),
         keepPreviousData: true,
       }),
     };
