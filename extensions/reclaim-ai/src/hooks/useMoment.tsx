@@ -4,6 +4,7 @@ import { useCallbackSafeRef } from "./useCallbackSafeRef";
 import { ApiResponseMoment } from "./useEvent.types";
 import { useSyncCachedState } from "./useSyncCachedState";
 import { mapTimes } from "../utils/arrays";
+import { minutesToMilliseconds } from "date-fns";
 
 const UPDATE_ON_MINUTE = 5;
 const MINUTES_EARLY = 1;
@@ -24,7 +25,7 @@ const getNextUpdateChunkEpoch = (now: Date = new Date()) => {
   // nfmc should never not be found in `MINUTE_CHUNKS` but as a type guard and juuuust
   // in case fallback to 60 to push to the next hour
   nfmcDate.setMinutes(nfmc || 60);
-  return nfmcDate.getTime() - MINUTES_EARLY * 60 * 1000;
+  return nfmcDate.getTime() - minutesToMilliseconds(MINUTES_EARLY);
 };
 
 export const useMoment = () => {
@@ -44,10 +45,11 @@ export const useMoment = () => {
     // update if:
     if (
       // we've never updated before
-      lastUpdateChunkEpochRef.current === undefined || // we're in the last `MINUTES_EARLY` of this chunk
+      lastUpdateChunkEpochRef.current === undefined ||
+      // we're in the last `MINUTES_EARLY` of this chunk
       ((nowEpoch > nextUpdateChunkEpoch ||
-        // we've passed the max amount of time since the last update
-        nowEpoch > lastUpdateChunkEpochRef.current + UPDATE_ON_MINUTE * 60 * 1000) &&
+        // we've passed the max amount of time since the last update (fall back in case we've somehow skipped the last minute of the last chunk)
+        nowEpoch > lastUpdateChunkEpochRef.current + minutesToMilliseconds(UPDATE_ON_MINUTE)) &&
         // we are not updating the same chunk we did last time
         nextUpdateChunkEpoch > lastUpdateChunkEpochRef.current)
     ) {
