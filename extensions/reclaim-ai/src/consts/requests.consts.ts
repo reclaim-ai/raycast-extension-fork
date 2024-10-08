@@ -2,7 +2,7 @@ import { config } from "dotenv";
 import path from "path";
 
 // .env files need to be in ~/.config/raycast/extensions/reclaim-ai - .env can't find them there by default.
-(config({ path: path.resolve(__dirname, ".env") }));
+config({ path: path.resolve(__dirname, ".env") });
 
 const HEADER_KEY_PREFIX = "RAI_REQUEST_HEADER_";
 

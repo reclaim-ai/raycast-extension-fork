@@ -16,8 +16,6 @@ const useApi = <T,>(url: string) => {
   try {
     const { apiUrl } = getPreferenceValues<NativePreferences>();
 
-    
-
     const result = {
       error,
       ...useFetch<T>(`${apiUrl}${url}`, {

@@ -6,15 +6,15 @@ import { errorCoverage, upgradeAndCaptureError } from "./sentry";
 
 const { apiUrl } = getPreferenceValues<NativePreferences>();
 
-export abstract class FetcherError extends Error { }
+export abstract class FetcherError extends Error {}
 
-export abstract class FetcherRequestError extends FetcherError { }
-export class FetcherRequestPrepError extends FetcherRequestError { }
-export class FetcherRequestFailedError extends FetcherRequestError { }
-export class FetcherRequestInvalidJSONError extends FetcherRequestError { }
+export abstract class FetcherRequestError extends FetcherError {}
+export class FetcherRequestPrepError extends FetcherRequestError {}
+export class FetcherRequestFailedError extends FetcherRequestError {}
+export class FetcherRequestInvalidJSONError extends FetcherRequestError {}
 
-export abstract class FetcherResponseError extends FetcherError { }
-export class FetcherResponseInvalidJSONError extends FetcherRequestError { }
+export abstract class FetcherResponseError extends FetcherError {}
+export class FetcherResponseInvalidJSONError extends FetcherRequestError {}
 
 export type FetcherOptions = {
   init?: RequestInit;
