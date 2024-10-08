@@ -105,8 +105,8 @@
     }
   ],
   "dependencies": {
-    "@raycast/api": "^1.52.1",
-    "@raycast/utils": "^1.8.0",
+    "@raycast/api": "^1.83.2",
+    "@raycast/utils": "^1.17.0",
     "date-fns": "^2.30.0"
   },
   "devDependencies": {
