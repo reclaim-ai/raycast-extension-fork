@@ -71,4 +71,4 @@ export const mapTimes = <T>(times: number, cb: (i: number) => T): T[] => {
   const arr: T[] = [];
   for (let i = 0; i < times; i++) arr.push(cb(i));
   return arr;
-}
+};

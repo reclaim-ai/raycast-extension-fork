@@ -8,7 +8,7 @@ import { mapTimes } from "../utils/arrays";
 const UPDATE_ON_MINUTE = 5;
 const MINUTES_EARLY = 1;
 // [0, 5, 10, 15 ... 45, 50, 55, 60]
-const MINUTE_CHUNKS = mapTimes((60 / UPDATE_ON_MINUTE) + 1, (i) => i * UPDATE_ON_MINUTE);
+const MINUTE_CHUNKS = mapTimes(60 / UPDATE_ON_MINUTE + 1, (i) => i * UPDATE_ON_MINUTE);
 
 const getNextUpdateChunkEpoch = (now: Date = new Date()) => {
   // nfmc: next five minute chunk
@@ -44,9 +44,8 @@ export const useMoment = () => {
     // update if:
     if (
       // we've never updated before
-      lastUpdateChunkEpochRef.current === undefined ||
-      (// we're in the last `MINUTES_EARLY` of this chunk
-      (nowEpoch > nextUpdateChunkEpoch ||
+      lastUpdateChunkEpochRef.current === undefined || // we're in the last `MINUTES_EARLY` of this chunk
+      ((nowEpoch > nextUpdateChunkEpoch ||
         // we've passed the max amount of time since the last update
         nowEpoch > lastUpdateChunkEpochRef.current + UPDATE_ON_MINUTE * 60 * 1000) &&
         // we are not updating the same chunk we did last time
