@@ -27,6 +27,7 @@ const useUser = () => {
       setIsLoading(true);
 
       const [user, error] = await fetchPromise<ApiResponseUser>("/users/current");
+      console.log(!!user, error, 54);
 
       if (!user || error) throw error;
 
@@ -53,3 +54,13 @@ const useUser = () => {
 };
 
 export { useUser };
+
+// const useUser = () => {
+//   const {data: currentUser, isLoading, error} = useApi<ApiResponseUser>("/users/current")
+
+//   return {
+//     currentUser,
+//     isLoading,
+//     error
+//   };
+// };

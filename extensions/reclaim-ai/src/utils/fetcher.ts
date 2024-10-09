@@ -24,7 +24,10 @@ export const fetcher = async <T>(url: string, options?: RequestInit, payload?: u
     },
   })
     .then((r) => r.json())
-    .catch((e) => console.error(e));
+    .catch((e) => {
+      console.error(e);
+      throw e;
+    });
 };
 
 export const fetchPromise = async <T>(
@@ -42,8 +45,10 @@ export const fetchPromise = async <T>(
 
   try {
     const result: Awaited<T> = await fetcher(url, options, payload);
+    if (url === "/users/current") console.log("success!", !!result);
     return [result, null];
   } catch (err) {
+    if (url === "/users/current") console.log("failure!", err);
     return [null, err as FetchError];
   }
 };
